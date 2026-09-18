@@ -1,0 +1,2158 @@
+/* ============================================================
+   PROJECT PAPAYA
+   McLAREN FORMULA 1 TEAM
+   RACE ENGINEERING STUDY CONTROL
+
+   VISUAL LANGUAGE
+   ------------------------------------------------------------
+   PAPAYA  -> SPEED / ACTION / ENERGY
+   BLACK   -> CARBON / PERFORMANCE
+   WHITE   -> DATA / PRECISION
+   BLUE    -> TECHNICAL REFERENCE
+   ============================================================ */
+
+:root {
+
+    /* ========================================================
+       CORE
+       ======================================================== */
+
+    --background: #050505;
+    --background-2: #090909;
+
+    --black: #050505;
+    --black-2: #0a0a0a;
+
+    --panel: #0d0e0f;
+    --panel2: #131516;
+    --panel3: #1a1c1e;
+
+    --carbon: #101213;
+    --carbon-light: #1d2022;
+
+
+    /* ========================================================
+       PAPAYA
+       ======================================================== */
+
+    --accent: #ff8000;
+    --accent-bright: #ff9d32;
+    --accent-hot: #ffb35c;
+
+    --accent-dark: #b65300;
+    --accent-dim: #542a08;
+
+    --accent-rgb: 255, 128, 0;
+
+
+    /* ========================================================
+       TECH BLUE
+       ======================================================== */
+
+    --blue: #00a3ff;
+    --blue-dim: #16435a;
+
+
+    /* ========================================================
+       PERFORMANCE
+       ======================================================== */
+
+    --purple: #806cff;
+    --purple-dim: #352d61;
+
+
+    /* ========================================================
+       STATUS
+       ======================================================== */
+
+    --yellow: #ffd84a;
+    --amber: #ffae00;
+    --green: #9bdc00;
+
+
+    /* ========================================================
+       NEUTRALS
+       ======================================================== */
+
+    --white: #f5f5f5;
+
+    --silver: #c7cbce;
+    --silver-dim: #7c8387;
+    --silver-dark: #42474a;
+
+    --line: #292d2f;
+    --line-bright: #464b4e;
+
+
+    /* ========================================================
+       TYPE
+       ======================================================== */
+
+    --mono:
+        "IBM Plex Mono",
+        "Roboto Mono",
+        monospace;
+
+    --display:
+        "Titillium Web",
+        "Rajdhani",
+        "Arial Narrow",
+        sans-serif;
+
+
+    /* ========================================================
+       EFFECTS
+       ======================================================== */
+
+    --glow-accent:
+        0 0 12px
+        rgba(
+            var(--accent-rgb),
+            0.16
+        );
+
+    --glow-accent-strong:
+        0 0 22px
+        rgba(
+            var(--accent-rgb),
+            0.28
+        );
+}
+
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100%;
+
+    background:
+        var(--background);
+
+    color:
+        var(--white);
+}
+
+
+/* ============================================================
+   McLAREN BODY
+   ============================================================ */
+
+body {
+
+    background:
+
+        /* PAPAYA AMBIENT LIGHT */
+
+        radial-gradient(
+            circle at 100% -10%,
+            rgba(
+                var(--accent-rgb),
+                0.3
+            ),
+            transparent 50%
+        ),
+
+        /* PAPAYA LOWER REFLECTION */
+
+        radial-gradient(
+            circle at -5% 105%,
+            rgba(
+                var(--accent-rgb),
+                0.055
+            ),
+            transparent 50%
+        ),
+
+        /* BLUE TECH LIGHT */
+
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(
+                0,
+                163,
+                255,
+                0.018
+            ),
+            transparent 35%
+        ),
+
+        /* TECH GRID */
+
+        linear-gradient(
+            rgba(
+                255,
+                255,
+                255,
+                0.009
+            ) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.009
+            ) 1px,
+            transparent 1px
+        ),
+
+        var(--background);
+
+    background-size:
+        auto,
+        auto,
+        auto,
+        32px 32px,
+        32px 32px;
+}
+
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+
+.topbar {
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    min-height: 72px;
+
+    padding: 12px 22px;
+
+    border-bottom:
+        1px solid var(--line);
+
+    background:
+
+        linear-gradient(
+            105deg,
+            #111213 0%,
+            #080909 48%,
+            #0e0f10 100%
+        );
+
+    overflow: hidden;
+}
+
+
+/* BIG PAPAYA SPEED BAND */
+
+.topbar::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 48%;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent) 0%,
+            var(--accent) 72%,
+            transparent 100%
+        );
+
+    transform:
+        skewX(-28deg);
+
+    transform-origin:
+        left bottom;
+}
+
+
+/* TOP TECH LINE */
+
+.topbar::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: 0;
+    top: 0;
+
+    width: 42%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--accent),
+            transparent
+        );
+
+    opacity: 0.45;
+}
+
+
+/* ============================================================
+   BRAND
+   ============================================================ */
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+
+/* ============================================================
+   BRAND MARK
+   ============================================================ */
+
+.brand-mark {
+
+    position: relative;
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        var(--accent);
+
+    color:
+        #050505;
+
+    font-family:
+        var(--display);
+
+    font-size:
+        15px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        0;
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            100% 68%,
+            68% 100%,
+            0 100%
+        );
+
+    box-shadow:
+        4px 4px 0
+        rgba(
+            255,
+            128,
+            0,
+            0.18
+        );
+}
+
+
+/* small black sensor */
+
+.brand-mark::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: 5px;
+    top: 5px;
+
+    width: 5px;
+    height: 5px;
+
+    background:
+        #050505;
+}
+
+
+/* ============================================================
+   BRAND TEXT
+   ============================================================ */
+
+.brand-text {
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+
+.brand-text .t1 {
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--display);
+
+    font-size:
+        18px;
+
+    font-weight:
+        900;
+
+    line-height:
+        1;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.brand-text .t2 {
+
+    margin-top:
+        5px;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    line-height:
+        1;
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.brand-team {
+
+    margin-top:
+        4px;
+
+    color:
+        var(--accent);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        0.14em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ============================================================
+   TOPBAR DATA
+   ============================================================ */
+
+.topbar-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 24px;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.top-stat {
+
+    position: relative;
+
+    padding-left:
+        12px;
+}
+
+
+.top-stat::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 50%;
+
+    width: 4px;
+    height: 4px;
+
+    transform:
+        translateY(-50%);
+
+    background:
+        var(--accent);
+
+    box-shadow:
+        0 0 6px
+        rgba(
+            var(--accent-rgb),
+            0.35
+        );
+}
+
+
+.topbar-right b {
+
+    display: block;
+
+    margin-top:
+        3px;
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        0;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* ============================================================
+   CHANGE TEAM
+   ============================================================ */
+
+.team-change-btn {
+
+    height:
+        32px;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid var(--line);
+
+    border-radius:
+        0;
+
+    background:
+        transparent;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.13em;
+
+    text-transform:
+        uppercase;
+
+    cursor:
+        pointer;
+
+    transition:
+        color 120ms ease,
+        border-color 120ms ease,
+        background 120ms ease;
+}
+
+
+.team-change-btn:hover {
+
+    color:
+        #050505;
+
+    border-color:
+        var(--accent);
+
+    background:
+        var(--accent);
+
+    box-shadow:
+        var(--glow-accent);
+}
+
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
+
+.summary {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(140px, 1fr)
+        );
+
+    gap:
+        1px;
+
+    background:
+        var(--line);
+
+    border-bottom:
+        1px solid var(--line);
+}
+
+
+/* ============================================================
+   SUMMARY CELL
+   ============================================================ */
+
+.summary .cell {
+
+    position: relative;
+
+    min-height:
+        76px;
+
+    padding:
+        14px 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #161819,
+            #0b0c0d
+        );
+
+    overflow: hidden;
+}
+
+
+/* LARGE PAPAYA ANGLE */
+
+.summary .cell::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -20px;
+    top: 0;
+
+    width: 48px;
+    height: 100%;
+
+    background:
+        var(--accent);
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            62% 100%,
+            0 100%
+        );
+
+    opacity:
+        0.92;
+}
+
+
+/* PAPAYA MICRO LINE */
+
+.summary .cell::after {
+
+    content: "";
+
+    position: absolute;
+
+    left:
+        16px;
+
+    bottom:
+        0;
+
+    width:
+        48px;
+
+    height:
+        2px;
+
+    background:
+        var(--accent);
+}
+
+
+/* ============================================================
+   SUMMARY TEXT
+   ============================================================ */
+
+.summary .label {
+
+    margin-bottom:
+        7px;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.summary .value {
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        20px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+.summary .value.teal {
+
+    color:
+        var(--blue);
+}
+
+
+.summary .value.amber {
+
+    color:
+        var(--accent);
+}
+
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+
+.session-panel,
+.picker-panel,
+.box-panel {
+
+    position:
+        relative;
+
+    background:
+        var(--panel);
+
+    border:
+        1px solid var(--line);
+
+    box-shadow:
+        0 8px 24px
+        rgba(
+            0,
+            0,
+            0,
+            0.28
+        );
+
+    overflow:
+        hidden;
+}
+
+
+/* ============================================================
+   PAPAYA PANEL EDGE
+   ============================================================ */
+
+.session-panel::before,
+.picker-panel::before,
+.box-panel::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width:
+        110px;
+
+    height:
+        3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            var(--accent-bright),
+            transparent
+        );
+
+    z-index:
+        2;
+}
+
+
+/* ============================================================
+   PANEL HEADERS
+   ============================================================ */
+
+.session-head,
+.picker-head,
+.box-head {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    min-height:
+        48px;
+
+    padding:
+        0 18px;
+
+    border-bottom:
+        1px solid var(--line);
+
+    background:
+
+        linear-gradient(
+            90deg,
+            rgba(
+                var(--accent-rgb),
+                0.09
+            ),
+            transparent 52%
+        );
+}
+
+
+.session-head h2,
+.picker-head h2,
+.box-head h2 {
+
+    margin:
+        0;
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--display);
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ============================================================
+   TRACK VIEW
+   ============================================================ */
+
+.trackview {
+
+    position:
+        relative;
+
+    height:
+        280px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    overflow:
+        hidden;
+
+    border-bottom:
+        1px solid var(--line);
+
+    background:
+
+        /* papaya glow */
+
+        radial-gradient(
+            circle at 72% 48%,
+            rgba(
+                var(--accent-rgb),
+                0.055
+            ),
+            transparent 30%
+        ),
+
+        /* diagonal speed field */
+
+        repeating-linear-gradient(
+            135deg,
+            transparent 0,
+            transparent 42px,
+            rgba(
+                255,
+                128,
+                0,
+                0.018
+            ) 43px,
+            transparent 44px
+        ),
+
+        /* technical grid */
+
+        linear-gradient(
+            rgba(
+                255,
+                255,
+                255,
+                0.018
+            ) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.018
+            ) 1px,
+            transparent 1px
+        ),
+
+        #070707;
+
+    background-size:
+        auto,
+        auto,
+        28px 28px,
+        28px 28px;
+}
+
+
+/* ============================================================
+   TRACK LABEL
+   ============================================================ */
+
+.trackview::before {
+
+    content:
+        "McLAREN // LIVE PERFORMANCE DATA";
+
+    position:
+        absolute;
+
+    top:
+        11px;
+
+    left:
+        14px;
+
+    color:
+        var(--silver-dark);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.18em;
+
+    z-index:
+        2;
+}
+
+
+/* ============================================================
+   TARGETING FRAME
+   ============================================================ */
+
+.trackview::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    width:
+        72%;
+
+    height:
+        68%;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            128,
+            0,
+            0.06
+        );
+
+    pointer-events:
+        none;
+}
+
+
+.trackview svg {
+
+    width:
+        88%;
+
+    height:
+        88%;
+
+    overflow:
+        visible;
+
+    z-index:
+        1;
+}
+
+
+/* ============================================================
+   TRACK LINE
+   ============================================================ */
+
+.track-line {
+
+    fill:
+        none;
+
+    stroke:
+        #45494b;
+
+    stroke-width:
+        2.5;
+
+    stroke-linejoin:
+        round;
+
+    stroke-linecap:
+        round;
+}
+
+
+/* ============================================================
+   TRACK PROGRESS
+   ============================================================ */
+
+.track-progress {
+
+    fill:
+        none;
+
+    stroke:
+        var(--accent);
+
+    stroke-width:
+        3.5;
+
+    stroke-linejoin:
+        round;
+
+    stroke-linecap:
+        round;
+
+    filter:
+        drop-shadow(
+            0 0 5px
+            rgba(
+                var(--accent-rgb),
+                0.42
+            )
+        );
+}
+
+
+/* ============================================================
+   TRACK DOT
+   ============================================================ */
+
+.track-dot {
+
+    fill:
+        var(--accent-hot);
+
+    filter:
+        drop-shadow(
+            0 0 6px
+            rgba(
+                var(--accent-rgb),
+                0.55
+            )
+        );
+}
+
+
+/* ============================================================
+   TRACK CAPTION
+   ============================================================ */
+
+.track-caption {
+
+    position:
+        absolute;
+
+    bottom:
+        10px;
+
+    left:
+        14px;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.12em;
+
+    z-index:
+        2;
+}
+
+
+.track-caption b {
+
+    color:
+        var(--accent);
+
+    font-weight:
+        700;
+}
+
+
+/* ============================================================
+   TRACK RIGHT DATA
+   ============================================================ */
+
+.track-rd {
+
+    position:
+        absolute;
+
+    top:
+        11px;
+
+    right:
+        14px;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.12em;
+
+    z-index:
+        2;
+}
+
+
+/* ============================================================
+   TIMER BLOCK
+   ============================================================ */
+
+.timer-block {
+
+    position:
+        relative;
+
+    padding:
+        30px 22px 28px;
+
+    text-align:
+        center;
+
+    border-bottom:
+        1px solid var(--line);
+
+    background:
+
+        radial-gradient(
+            circle at center,
+            rgba(
+                var(--accent-rgb),
+                0.065
+            ),
+            transparent 60%
+        ),
+
+        linear-gradient(
+            180deg,
+            #0d0e0f,
+            #090a0a
+        );
+}
+
+
+/* ============================================================
+   TIMER PAPAYA MARK
+   ============================================================ */
+
+.timer-block::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        50%;
+
+    width:
+        70px;
+
+    height:
+        3px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--accent),
+            var(--accent-bright),
+            var(--accent),
+            transparent
+        );
+
+    box-shadow:
+        var(--glow-accent);
+}
+
+
+/* ============================================================
+   SESSION TYPE
+   ============================================================ */
+
+.session-type {
+
+    margin-bottom:
+        10px;
+
+    color:
+        var(--accent);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        0.24em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ============================================================
+   TIMER DISPLAY
+   ============================================================ */
+
+.timer-display {
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        clamp(
+            52px,
+            7vw,
+            88px
+        );
+
+    font-weight:
+        500;
+
+    line-height:
+        0.95;
+
+    letter-spacing:
+        -0.055em;
+
+    font-variant-numeric:
+        tabular-nums;
+
+    text-shadow:
+        0 2px 0 #000,
+        0 0 24px
+        rgba(
+            255,
+            128,
+            0,
+            0.08
+        );
+}
+
+
+/* ============================================================
+   TIMER SUB
+   ============================================================ */
+
+.timer-sub {
+
+    margin-top:
+        11px;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+
+.controls {
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+    margin-top:
+        18px;
+}
+
+
+.controls button {
+
+    min-width:
+        145px;
+
+    height:
+        40px;
+
+    padding:
+        0 20px;
+
+    border:
+        1px solid var(--accent);
+
+    border-radius:
+        0;
+
+    background:
+        var(--accent);
+
+    color:
+        #050505;
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        9px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        0.16em;
+
+    text-transform:
+        uppercase;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        transform 120ms ease,
+        box-shadow 120ms ease;
+}
+
+
+.controls button:hover {
+
+    background:
+        var(--accent-bright);
+
+    border-color:
+        var(--accent-bright);
+
+    box-shadow:
+        var(--glow-accent-strong);
+}
+
+
+.controls button:active {
+
+    transform:
+        translateY(1px);
+}
+
+
+/* ============================================================
+   SECONDARY CONTROL
+   ============================================================ */
+
+.controls button.secondary {
+
+    border-color:
+        var(--line-bright);
+
+    background:
+        transparent;
+
+    color:
+        var(--silver-dim);
+}
+
+
+.controls button.secondary:hover {
+
+    border-color:
+        var(--accent);
+
+    background:
+        rgba(
+            var(--accent-rgb),
+            0.08
+        );
+
+    color:
+        var(--white);
+}
+
+
+/* ============================================================
+   DISABLED
+   ============================================================ */
+
+.controls button:disabled {
+
+    opacity:
+        0.35;
+
+    cursor:
+        not-allowed;
+
+    transform:
+        none;
+
+    box-shadow:
+        none;
+}
+
+
+/* ============================================================
+   MODE SWITCH
+   ============================================================ */
+
+.modeswitch {
+
+    display:
+        flex;
+
+    border-top:
+        1px solid var(--line);
+
+    background:
+        #070707;
+}
+
+
+/* ============================================================
+   MODE BUTTON
+   ============================================================ */
+
+.modeswitch button {
+
+    position:
+        relative;
+
+    flex:
+        1;
+
+    min-height:
+        44px;
+
+    padding:
+        12px 8px;
+
+    border:
+        none;
+
+    border-right:
+        1px solid var(--line);
+
+    background:
+        transparent;
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        0.14em;
+
+    text-transform:
+        uppercase;
+
+    cursor:
+        pointer;
+
+    transition:
+        color 120ms ease,
+        background 120ms ease;
+}
+
+
+.modeswitch button:last-child {
+
+    border-right:
+        none;
+}
+
+
+.modeswitch button:hover {
+
+    color:
+        var(--white);
+
+    background:
+        rgba(
+            var(--accent-rgb),
+            0.035
+        );
+}
+
+
+/* ============================================================
+   ACTIVE MODE
+   ============================================================ */
+
+.modeswitch button.active {
+
+    color:
+        var(--white);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(
+                var(--accent-rgb),
+                0.12
+            ),
+            rgba(
+                var(--accent-rgb),
+                0.025
+            )
+        );
+}
+
+
+.modeswitch button.active::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    left:
+        0;
+
+    top:
+        0;
+
+    width:
+        100%;
+
+    height:
+        3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent-dark),
+            var(--accent),
+            var(--accent-bright),
+            var(--accent)
+        );
+}
+
+
+.modeswitch button.active::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    bottom:
+        7px;
+
+    width:
+        5px;
+
+    height:
+        5px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        var(--accent);
+
+    box-shadow:
+        0 0 7px
+        rgba(
+            var(--accent-rgb),
+            0.5
+        );
+}
+
+
+/* ============================================================
+   TELEMETRY HELPERS
+   ============================================================ */
+
+.telemetry {
+
+    font-family:
+        var(--mono);
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+.telemetry-label {
+
+    color:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.16em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.telemetry-value {
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        18px;
+
+    font-weight:
+        600;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+.status-ok {
+
+    color:
+        var(--green);
+}
+
+
+.status-warning {
+
+    color:
+        var(--yellow);
+}
+
+
+.status-danger {
+
+    color:
+        var(--accent);
+}
+
+
+/* ============================================================
+   DELTA
+   ============================================================ */
+
+.delta-positive {
+
+    color:
+        var(--accent);
+}
+
+
+.delta-negative {
+
+    color:
+        var(--blue);
+}
+
+
+/* ============================================================
+   FOCUS INDICATOR
+   ============================================================ */
+
+.focus-indicator {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    height:
+        3px;
+
+    background:
+        var(--line);
+
+    overflow:
+        hidden;
+}
+
+
+.focus-indicator::after {
+
+    content:
+        "";
+
+    display:
+        block;
+
+    width:
+        78%;
+
+    height:
+        100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent-dark),
+            var(--accent),
+            var(--accent-hot)
+        );
+
+    box-shadow:
+        0 0 8px
+        rgba(
+            var(--accent-rgb),
+            0.28
+        );
+}
+
+
+/* ============================================================
+   OPTIONAL DRIVER LANGUAGE
+   ============================================================ */
+
+.driver-push {
+
+    color:
+        var(--accent);
+}
+
+
+.driver-precision {
+
+    color:
+        var(--blue);
+}
+
+
+.performance {
+
+    color:
+        var(--purple);
+}
+
+
+/* ============================================================
+   TEAM SELECT OVERLAY
+   ============================================================
+
+   O overlay continua sendo controlado pelo JS.
+   Não forçamos display:none.
+   ============================================================ */
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    min-height:
+        42px;
+
+    padding:
+        0 22px;
+
+    border-top:
+        1px solid var(--line);
+
+    background:
+        #070707;
+
+    color:
+        var(--silver-dark);
+
+    font-family:
+        var(--mono);
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+footer strong {
+
+    color:
+        var(--accent);
+
+    font-weight:
+        600;
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+
+    width:
+        5px;
+
+    height:
+        5px;
+}
+
+
+::-webkit-scrollbar-track {
+
+    background:
+        #050505;
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background:
+        var(--accent-dark);
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background:
+        var(--accent);
+}
+
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+
+::selection {
+
+    background:
+        var(--accent);
+
+    color:
+        #050505;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    .topbar {
+
+        padding:
+            12px 16px;
+    }
+
+
+    .topbar-right {
+
+        gap:
+            10px;
+    }
+
+
+    .top-stat {
+
+        display:
+            none;
+    }
+
+
+    .summary {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .controls {
+
+        padding:
+            0 16px 16px;
+    }
+
+
+    .controls button {
+
+        flex:
+            1 1 140px;
+    }
+}
+
+
+@media (max-width: 520px) {
+
+    .brand-team {
+
+        display:
+            none;
+    }
+
+
+    .brand-text .t1 {
+
+        font-size:
+            15px;
+    }
+
+
+    .summary {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .timer-display {
+
+        font-size:
+            48px;
+    }
+
+
+    .trackview {
+
+        height:
+            220px;
+    }
+
+
+    .modeswitch {
+
+        overflow-x:
+            auto;
+    }
+
+
+    .modeswitch button {
+
+        min-width:
+            100px;
+    }
+}

@@ -1,0 +1,236 @@
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    padding: 13px 18px;
+
+    border-bottom: 1px solid var(--line);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(
+                var(--accent-rgb),
+                0.065
+            ),
+            transparent
+        );
+}
+
+.topbar::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 180px;
+    height: 1px;
+
+    background: var(--accent);
+
+    box-shadow: var(--glow-accent);
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.brand-mark {
+    position: relative;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--accent);
+
+    color: var(--accent);
+
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+
+    background:
+        rgba(
+            var(--accent-rgb),
+            0.035
+        );
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 70%,
+        70% 100%,
+        0 100%
+    );
+
+    box-shadow:
+        inset 0 0 12px
+        rgba(
+            var(--accent-rgb),
+            0.04
+        );
+}
+
+.brand-mark::after {
+    content: "";
+
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    right: 5px;
+    top: 5px;
+
+    background: var(--accent);
+
+    box-shadow:
+        0 0 7px var(--accent);
+}
+
+.brand-text {
+    min-width: 0;
+}
+
+.brand-text .t1 {
+    color: var(--white);
+
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.brand-text .t2 {
+    color: var(--silver-dim);
+
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.brand-team {
+    margin-top: 3px;
+
+    color: var(--accent);
+
+    font-size: 8px;
+    letter-spacing: 1.5px;
+
+    opacity: 0.8;
+}
+
+
+/* =========================================================
+   TOPBAR DATA
+========================================================= */
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+
+    gap: 26px;
+
+    color: var(--silver-dim);
+
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.top-stat {
+    position: relative;
+}
+
+.top-stat::before {
+    content: "";
+
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    left: -10px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    background: var(--accent);
+}
+
+.topbar-right b {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--accent);
+
+    font-size: 15px;
+    font-weight: 600;
+
+    letter-spacing: 0;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* =========================================================
+   CHANGE TEAM BUTTON
+========================================================= */
+
+.team-change-btn {
+    padding: 8px 11px;
+
+    border: 1px solid var(--line);
+
+    background: transparent;
+
+    color: var(--silver-dim);
+
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+
+    transition:
+        color 120ms ease,
+        border-color 120ms ease,
+        background 120ms ease;
+}
+
+.team-change-btn:hover {
+    color: var(--accent);
+
+    border-color: var(--accent);
+
+    background:
+        rgba(
+            var(--accent-rgb),
+            0.05
+        );
+}
+

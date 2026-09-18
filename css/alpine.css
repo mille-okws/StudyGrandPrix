@@ -1,0 +1,482 @@
+
+/* =========================================================
+   PROJECT PINK BWT
+
+   BWT ALPINE F1 TEAM
+
+   STUDY CONTROL
+========================================================= */
+
+@import url("./alpine/topbar.css");
+
+@import url("./alpine/summary.css");
+
+@import url("./alpine/trackview.css");
+
+
+/* =========================================================
+   ALPINE CORE
+========================================================= */
+
+:root {
+    --background: #05080b;
+
+    --panel: #0a1015;
+    --panel2: #101820;
+    --panel3: #17232c;
+
+    --line: #25343e;
+    --line-bright: #3b4e5a;
+
+    --accent: #ff4fa3;
+    --accent-bright: #ff7fba;
+    --accent-dim: #64213f;
+
+    --blue: #0090ff;
+    --blue-bright: #36adff;
+    --blue-dim: #123c5c;
+
+    --silver: #e2e8ec;
+    --silver-dim: #71808a;
+    --silver-dark: #46545d;
+
+    --accent-rgb: 255, 79, 163;
+    --blue-rgb: 0, 144, 255;
+
+    --glow-accent:
+        0 0 14px
+        rgba(
+            var(--accent-rgb),
+            0.20
+        );
+
+    --glow-accent-strong:
+        0 0 22px
+        rgba(
+            var(--accent-rgb),
+            0.38
+        );
+
+    --glow-blue:
+        0 0 14px
+        rgba(
+            var(--blue-rgb),
+            0.18
+        );
+}
+
+
+/* =========================================================
+   ALPINE BODY
+========================================================= */
+
+body {
+    background:
+        radial-gradient(
+            circle at 15% -10%,
+            rgba(
+                var(--accent-rgb),
+                0.11
+            ),
+            transparent 36%
+        ),
+
+        radial-gradient(
+            circle at 90% 15%,
+            rgba(
+                var(--blue-rgb),
+                0.075
+            ),
+            transparent 34%
+        ),
+
+        radial-gradient(
+            circle at 80% 100%,
+            rgba(
+                var(--accent-rgb),
+                0.035
+            ),
+            transparent 38%
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 0px,
+
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 1px,
+
+            transparent 1px,
+            transparent 4px
+        ),
+
+        var(--background);
+}
+
+
+/* =========================================================
+   PANEL ACCENTS
+========================================================= */
+
+.session-panel::before,
+.picker-panel::before,
+.box-panel::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -1px;
+    top: -1px;
+
+    width: 42px;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            var(--blue)
+        );
+
+    box-shadow:
+        var(--glow-accent);
+}
+
+
+/* =========================================================
+   PANEL HEADERS
+========================================================= */
+
+.session-head,
+.picker-head,
+.box-head {
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(
+                var(--accent-rgb),
+                0.045
+            ),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+.timer-block {
+
+    padding: 20px 22px;
+
+    text-align: center;
+
+    border-bottom:
+        1px solid var(--line);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(
+                var(--accent-rgb),
+                0.045
+            ),
+            transparent 62%
+        ),
+
+        radial-gradient(
+            circle at 75% 50%,
+            rgba(
+                var(--blue-rgb),
+                0.035
+            ),
+            transparent 45%
+        );
+}
+
+.session-type {
+
+    margin-bottom: 10px;
+
+    color: var(--accent);
+
+    font-size: 11px;
+    letter-spacing: 3px;
+}
+
+.timer-display {
+
+    color: var(--silver);
+
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 2px;
+
+    font-variant-numeric:
+        tabular-nums;
+
+    text-shadow:
+        0 0 18px
+        rgba(
+            var(--accent-rgb),
+            0.08
+        );
+}
+
+.timer-sub {
+
+    margin-top: 8px;
+
+    color: var(--silver-dim);
+
+    font-size: 9px;
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls button {
+
+    position: relative;
+
+    padding: 11px 22px;
+
+    border:
+        1px solid var(--accent);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent-dim),
+            rgba(
+                var(--blue-rgb),
+                0.10
+            )
+        );
+
+    color: var(--accent);
+
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+
+    cursor: pointer;
+}
+
+.controls button:hover {
+
+    background: var(--accent);
+
+    color: var(--background);
+
+    box-shadow:
+        var(--glow-accent-strong);
+}
+
+.controls button:active {
+    transform: translateY(1px);
+}
+
+.controls button.secondary {
+
+    border-color: var(--line);
+
+    background: transparent;
+
+    color: var(--silver-dim);
+}
+
+.controls button.secondary:hover {
+
+    border-color: var(--silver-dim);
+
+    background: var(--panel2);
+
+    color: var(--silver);
+
+    box-shadow: none;
+}
+
+.controls button:disabled {
+
+    opacity: 0.35;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   MODE SWITCH
+========================================================= */
+
+.modeswitch {
+
+    display: flex;
+
+    border-top:
+        1px solid var(--line);
+
+    background: var(--panel);
+}
+
+.modeswitch button {
+
+    position: relative;
+
+    flex: 1;
+
+    padding: 12px 8px;
+
+    border: none;
+
+    border-right:
+        1px solid var(--line);
+
+    background: none;
+
+    color: var(--silver-dim);
+
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+}
+
+.modeswitch button:last-child {
+    border-right: none;
+}
+
+.modeswitch button:hover {
+
+    color: var(--silver);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.018
+        );
+}
+
+.modeswitch button.active {
+
+    color: var(--accent);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(
+                var(--accent-rgb),
+                0.075
+            ),
+            rgba(
+                var(--blue-rgb),
+                0.035
+            )
+        );
+}
+
+.modeswitch button.active::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 20%;
+    right: 20%;
+    bottom: 0;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent),
+            var(--blue)
+        );
+
+    box-shadow:
+        0 0 8px
+        rgba(
+            var(--accent-rgb),
+            0.5
+        );
+}
+
+
+/* =========================================================
+   TEAM SELECT — ALPINE SKIN
+========================================================= */
+
+.team-select-overlay {
+
+    background:
+        radial-gradient(
+            circle at 15% 0%,
+            rgba(
+                var(--accent-rgb),
+                0.10
+            ),
+            transparent 38%
+        ),
+
+        radial-gradient(
+            circle at 90% 100%,
+            rgba(
+                var(--blue-rgb),
+                0.065
+            ),
+            transparent 35%
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 0px,
+
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 1px,
+
+            transparent 1px,
+            transparent 4px
+        ),
+
+        var(--background);
+}
+
+
+/* =========================================================
+   FOOTER — ALPINE
+========================================================= */
+
+footer {
+    color: var(--silver-dim);
+}

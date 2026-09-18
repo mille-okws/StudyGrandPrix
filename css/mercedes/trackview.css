@@ -1,0 +1,178 @@
+/* =========================================================
+   TRACK VIEW
+========================================================= */
+
+.trackview {
+    position: relative;
+
+    height: 280px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-bottom: 1px solid var(--line);
+
+    background:
+        linear-gradient(
+            rgba(
+                var(--accent-rgb),
+                0.035
+            ),
+            transparent
+        ),
+
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 24px,
+            rgba(
+                255,
+                255,
+                255,
+                0.018
+            ) 24px 25px
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            transparent 0 24px,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 24px 25px
+        );
+}
+
+.trackview::before {
+    content: "LIVE TRACK DATA";
+
+    position: absolute;
+
+    top: 10px;
+    left: 14px;
+
+    color: var(--silver-dark);
+
+    font-size: 8px;
+    letter-spacing: 2px;
+}
+
+.trackview::after {
+    content: "";
+
+    position: absolute;
+
+    width: 70%;
+    height: 70%;
+
+    border: 1px solid
+        rgba(
+            var(--accent-rgb),
+            0.035
+        );
+
+    pointer-events: none;
+}
+
+.trackview svg {
+    width: 88%;
+    height: 88%;
+
+    overflow: visible;
+
+    z-index: 1;
+}
+
+.track-line {
+    fill: none;
+
+    stroke: var(--silver-dark);
+
+    stroke-width: 2.6;
+
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.track-progress {
+    fill: none;
+
+    stroke: var(--accent);
+
+    stroke-width: 3.2;
+
+    stroke-linejoin: round;
+    stroke-linecap: round;
+
+    filter:
+        drop-shadow(
+            0 0 4px
+            rgba(
+                var(--accent-rgb),
+                0.7
+            )
+        )
+
+        drop-shadow(
+            0 0 10px
+            rgba(
+                var(--accent-rgb),
+                0.2
+            )
+        );
+}
+
+.track-dot {
+    fill: var(--white);
+
+    filter:
+        drop-shadow(
+            0 0 5px
+            var(--accent)
+        )
+
+        drop-shadow(
+            0 0 12px
+            rgba(
+                var(--accent-rgb),
+                0.6
+            )
+        );
+}
+
+.track-caption {
+    position: absolute;
+
+    bottom: 10px;
+    left: 14px;
+
+    color: var(--silver-dim);
+
+    font-size: 9px;
+    letter-spacing: 1px;
+
+    z-index: 2;
+}
+
+.track-caption b {
+    color: var(--accent);
+}
+
+.track-rd {
+    position: absolute;
+
+    top: 10px;
+    right: 14px;
+
+    color: var(--silver-dim);
+
+    font-size: 9px;
+    letter-spacing: 1px;
+
+    z-index: 2;
+}
+

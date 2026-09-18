@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <link rel="stylesheet" href="./css/base.css">
+  <link
+      id="teamStylesheet"
+      rel="stylesheet"
+  >
+
+  <title>PROJECT SILVER ARROW</title>
+</head>
+
+
+<body>
+
+<!-- =========================================================
+     TEAM SELECTION OVERLAY
+========================================================= -->
+
+<div
+  class="team-select-overlay"
+  id="teamSelectOverlay"
+>
+
+  <div class="team-select-panel">
+
+    <div class="team-select-header">
+
+      <div>
+        <span class="eyebrow">
+          SILVER ARROW // INITIALIZATION
+        </span>
+
+        <h1>
+          SELECT YOUR CONSTRUCTOR
+        </h1>
+
+        <p>
+          Escolha a equipe para inicializar seu sistema de estudo.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="team-select-close"
+        id="closeTeamSelectBtn"
+        aria-label="Fechar seleção de equipe"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      class="team-select-grid"
+      id="teamSelectGrid"
+    ></div>
+
+
+    <div class="team-select-footer">
+
+      <span>
+        CONSTRUCTOR CONFIGURATION
+      </span>
+
+      <span>
+        SYSTEM READY
+      </span>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOPBAR
+========================================================= -->
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <div
+      class="brand-mark"
+      aria-hidden="true"
+    >
+      S
+    </div>
+
+
+    <div class="brand-text">
+
+      <div class="t1">
+        SILVER ARROW
+      </div>
+
+      <div class="t2">
+        MERCEDES-AMG STUDY CONTROL · POMODORO
+      </div>
+
+      <div
+        class="brand-team"
+        aria-label="Equipe atual"
+      >
+        MERCEDES-AMG PETRONAS
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="topbar-right">
+
+    <div class="top-stat">
+
+      <span>
+        SESSÃO
+      </span>
+
+      <b id="topSession">
+        FREE PRACTICE
+      </b>
+
+    </div>
+
+
+    <div class="top-stat">
+
+      <span>
+        VOLTAS HOJE
+      </span>
+
+      <b id="topLapsToday">
+        0
+      </b>
+
+    </div>
+
+
+    <div class="top-stat">
+
+      <span>
+        TEMPO TOTAL
+      </span>
+
+      <b id="topTotalTime">
+        0h 00m
+      </b>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="team-change-btn"
+      id="changeTeamBtn"
+    >
+      TEAM // MERCEDES
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     SUMMARY
+========================================================= -->
+
+<div
+  class="summary"
+  id="summaryBar"
+></div>
+
+
+
+<div class="wrap">
+
+
+  <!-- =======================================================
+       MAIN GRID
+  ======================================================== -->
+
+  <main class="main-grid">
+
+
+    <!-- =====================================================
+         SESSION PANEL
+    ====================================================== -->
+
+    <section class="session-panel">
+
+
+      <div class="session-head">
+
+        <div>
+
+          <span class="eyebrow">
+            CURRENT CIRCUIT
+          </span>
+
+          <h2 id="circuitTitle">
+            SELECIONE UM CIRCUITO →
+          </h2>
+
+        </div>
+
+        <span id="circuitLocation">
+          -
+        </span>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           TRACK
+      ==================================================== -->
+
+      <div class="trackview">
+
+        <span
+          class="track-rd"
+          id="trackRd"
+        >
+          RD --
+        </span>
+
+
+        <svg
+          id="trackSvg"
+          viewBox="0 0 300 200"
+          role="img"
+          aria-label="Traçado do circuito"
+        ></svg>
+
+
+        <span class="track-caption">
+
+          DISTÂNCIA PERCORRIDA
+
+          <b id="trackPct">
+            0%
+          </b>
+
+        </span>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           TIMER
+      ==================================================== -->
+
+      <div class="timer-block">
+
+        <div
+          class="session-type"
+          id="sessionTypeLabel"
+        >
+          FREE PRACTICE
+        </div>
+
+
+        <div
+          class="timer-display"
+          id="timerDisplay"
+        >
+          25:00
+        </div>
+
+
+        <div
+          class="timer-sub"
+          id="timerSub"
+        >
+          SESSÃO PARADA · VOLTA 1
+        </div>
+
+
+        <div class="controls">
+
+          <button
+            type="button"
+            id="startBtn"
+          >
+            [ PUSH ]
+          </button>
+
+
+          <button
+            type="button"
+            class="secondary"
+            id="resetBtn"
+          >
+            [ BOX ]
+          </button>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           SESSION MODES
+      ==================================================== -->
+
+      <div class="modeswitch">
+
+        <button
+          type="button"
+          data-mode="practice"
+          class="active"
+        >
+          FREE PRACTICE 25
+        </button>
+
+
+        <button
+          type="button"
+          data-mode="qualy"
+        >
+          QUALIFYING
+        </button>
+
+
+        <button
+          type="button"
+          data-mode="race"
+        >
+          RACE
+        </button>
+
+
+        <button
+          type="button"
+          data-mode="short"
+        >
+          PIT STOP 5
+        </button>
+
+
+        <button
+          type="button"
+          data-mode="long"
+        >
+          BOX LONGO 15
+        </button>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           SUBJECT
+      ==================================================== -->
+
+      <div class="box-body subject-body">
+
+        <div class="subject-select">
+
+          <label for="subjectSelect">
+            MATÉRIA DESTA VOLTA
+          </label>
+
+
+          <select id="subjectSelect">
+
+            <option value="calculo">
+              Cálculo / Matemática (engenharia)
+            </option>
+
+            <option value="estruturas">
+              Estruturas / Resistência dos Materiais (engenharia)
+            </option>
+
+            <option value="termo">
+              Termodinâmica / Fluidos (engenharia)
+            </option>
+
+            <option value="eletrica">
+              Eletricidade / Circuitos (engenharia)
+            </option>
+
+            <option value="programacao">
+              Programação / Controle (engenharia)
+            </option>
+
+            <option value="outra">
+              Outra matéria
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           ENGINEER
+      ==================================================== -->
+
+      <div class="engineer">
+
+        <b>
+          ENGINEER:
+        </b>
+
+        <span id="engineerMsg">
+          Selecione um circuito e aperte PUSH
+          para começar a sessão.
+        </span>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           RATING / DEBRIEF
+      ==================================================== -->
+
+      <div
+        class="rating-panel"
+        id="ratingPanel"
+        hidden
+      >
+
+        <div class="rtitle">
+          DEBRIEF DA VOLTA —
+          COMO FOI A SESSÃO?
+        </div>
+
+
+        <div class="rating-row">
+
+          <div class="rlabel">
+
+            <span>
+              FOCO
+            </span>
+
+            <b id="focusVal">
+              7
+            </b>
+
+          </div>
+
+
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value="7"
+            id="focusRange"
+          >
+
+        </div>
+
+
+        <div class="rating-row">
+
+          <div class="rlabel">
+
+            <span>
+              TAREFAS CONCLUÍDAS
+            </span>
+
+            <b id="completionVal">
+              80%
+            </b>
+
+          </div>
+
+
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="80"
+            id="completionRange"
+          >
+
+        </div>
+
+
+        <div class="rating-row">
+
+          <div class="rlabel">
+
+            <span>
+              ERROS / DISTRAÇÕES
+            </span>
+
+            <b id="errorsVal">
+              10%
+            </b>
+
+          </div>
+
+
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="10"
+            id="errorsRange"
+          >
+
+        </div>
+
+
+        <button
+          type="button"
+          class="rating-submit"
+          id="ratingSubmit"
+        >
+          [ CONFIRMAR TELEMETRIA ]
+        </button>
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CIRCUIT PICKER
+    ====================================================== -->
+
+    <section class="picker-panel">
+
+      <div class="picker-head">
+
+        <div>
+
+          <span class="eyebrow">
+            SESSION ROUTING
+          </span>
+
+          <h2>
+            CALENDÁRIO 2026
+          </h2>
+
+        </div>
+
+        <span>
+          24 GPs · traçados reais
+        </span>
+
+      </div>
+
+
+      <div
+        class="circuit-list"
+        id="circuitList"
+      ></div>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- =======================================================
+       LOWER GRID
+  ======================================================== -->
+
+  <section class="lower-grid">
+
+
+    <!-- =====================================================
+         CAR STATUS
+    ====================================================== -->
+
+    <section class="box-panel">
+
+      <div class="box-head">
+
+        <h2>
+          MERCEDES-AMG F1
+        </h2>
+
+        <span>
+          status do carro
+        </span>
+
+      </div>
+
+
+      <div class="box-body">
+
+
+        <!-- ================================================
+             SLEEP INPUT
+        ================================================= -->
+
+        <div
+          class="subject-select sleep-input-group"
+        >
+
+          <label for="sleepInput">
+            HORAS DE SONO (ONTEM À NOITE)
+          </label>
+
+
+          <input
+            type="number"
+            id="sleepInput"
+            min="0"
+            max="14"
+            step="0.5"
+            placeholder="ex: 7.5"
+          >
+
+        </div>
+
+
+
+        <!-- ================================================
+             DRIVER CONDITION
+        ================================================= -->
+
+        <div class="driver-condition">
+
+
+          <div class="condition-header">
+
+            <span>
+              DRIVER CONDITION:
+            </span>
+
+            <strong id="restStatus">
+              --
+            </strong>
+
+          </div>
+
+
+          <div class="condition-row">
+
+            <span>
+              REST
+            </span>
+
+            <strong id="restValue">
+              --%
+            </strong>
+
+          </div>
+
+
+          <div class="bar-track">
+
+            <div
+              class="bar-fill"
+              id="restBar"
+              style="width:0%;"
+            ></div>
+
+          </div>
+
+
+          <div class="condition-sleep">
+
+            <span>
+              SLEEP
+            </span>
+
+            <strong id="sleepDisplay">
+              --
+            </strong>
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- ================================================
+             CAR ATTRIBUTES
+        ================================================= -->
+
+        <div
+          id="carStatusBody"
+        ></div>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         STUDY TELEMETRY
+    ====================================================== -->
+
+    <section class="box-panel">
+
+      <div class="box-head">
+
+        <h2>
+          STUDY TELEMETRY
+        </h2>
+
+        <span id="telemetrySessionCount">
+          0 voltas
+        </span>
+
+      </div>
+
+
+      <div
+        class="telemetry-grid"
+        id="telemetryGrid"
+      ></div>
+
+
+      <div class="telemetry-note">
+
+        PACE compara o foco médio de hoje
+        com sua média histórica.
+
+        CONSISTÊNCIA mede a regularidade
+        das suas voltas nos últimos 7 dias.
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOCUS CHART
+    ====================================================== -->
+
+    <section class="box-panel">
+
+      <div class="box-head">
+
+        <h2>
+          FOCO · 7 DIAS
+        </h2>
+
+        <span>
+          histórico
+        </span>
+
+      </div>
+
+
+      <div class="box-body">
+
+        <svg
+          class="chart-svg"
+          id="focusChart"
+          viewBox="0 0 280 140"
+          role="img"
+          aria-label="Histórico de foco dos últimos sete dias"
+        ></svg>
+
+      </div>
+
+    </section>
+
+
+  </section>
+
+
+
+  <!-- =======================================================
+       FOOTER
+  ======================================================== -->
+
+  <footer>
+
+    <span>
+      PROJECT SILVER ARROW · STUDY. ANALYZE. PUSH.
+    </span>
+
+    <br>
+
+    <span>
+      Traçados baseados em dados reais dos circuitos
+      (bacinger/f1-circuits, GeoJSON)
+      · sessões salvas localmente neste dispositivo
+    </span>
+
+  </footer>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+  type="module"
+  src="index.js"
+></script>
+
+
+</body>
+
+</html>

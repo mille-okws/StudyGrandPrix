@@ -1,0 +1,398 @@
+/* =========================================================
+   PROJECT SILVER ARROW
+   MERCEDES-AMG PETRONAS
+   STUDY CONTROL
+========================================================= */
+@import url(./mercedes/topbar.css);
+@import url(./mercedes/summary.css);
+@import url(./mercedes/trackview.css);
+
+/* =========================================================
+   MERCEDES CORE
+========================================================= */
+
+:root {
+    --background: #070a0a;
+
+    --panel: #0e1312;
+    --panel2: #131a18;
+    --panel3: #18211f;
+
+    --line: #27322f;
+    --line-bright: #3a4844;
+
+    --accent: #00d7b9;
+    --accent-bright: #35ffe3;
+    --accent-dim: #084c44;
+
+    --silver: #c7cdd1;
+    --silver-dim: #71807d;
+    --silver-dark: #4b5855;
+
+    --accent-rgb: 0, 215, 185;
+
+    --glow-accent:
+        0 0 14px
+        rgba(
+            var(--accent-rgb),
+            0.18
+        );
+
+    --glow-accent-strong:
+        0 0 20px
+        rgba(
+            var(--accent-rgb),
+            0.35
+        );
+}
+
+
+/* =========================================================
+   MERCEDES BODY
+========================================================= */
+
+body {
+    background:
+        radial-gradient(
+            circle at 15% -10%,
+            rgba(
+                var(--accent-rgb),
+                0.10
+            ),
+            transparent 38%
+        ),
+
+        radial-gradient(
+            circle at 90% 100%,
+            rgba(
+                var(--accent-rgb),
+                0.035
+            ),
+            transparent 35%
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 0px,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+
+        var(--background);
+}
+
+
+
+
+/* =========================================================
+   PANEL ACCENTS
+========================================================= */
+
+.session-panel::before,
+.picker-panel::before,
+.box-panel::before {
+    content: "";
+
+    position: absolute;
+
+    left: -1px;
+    top: -1px;
+
+    width: 42px;
+    height: 1px;
+
+    background: var(--accent);
+
+    box-shadow: var(--glow-accent);
+}
+
+
+/* =========================================================
+   PANEL HEADERS
+========================================================= */
+
+.session-head,
+.picker-head,
+.box-head {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(
+                var(--accent-rgb),
+                0.055
+            ),
+            transparent
+        );
+}
+
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+.timer-block {
+    padding: 20px 22px;
+
+    text-align: center;
+
+    border-bottom: 1px solid var(--line);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(
+                var(--accent-rgb),
+                0.035
+            ),
+            transparent 65%
+        );
+}
+
+.session-type {
+    margin-bottom: 10px;
+
+    color: var(--accent);
+
+    font-size: 11px;
+    letter-spacing: 3px;
+}
+
+.timer-display {
+    color: var(--white);
+
+    font-size: 64px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: 2px;
+
+    font-variant-numeric:
+        tabular-nums;
+
+    text-shadow:
+        0 0 18px
+        rgba(
+            255,
+            255,
+            255,
+            0.045
+        );
+}
+
+.timer-sub {
+    margin-top: 8px;
+
+    color: var(--silver-dim);
+
+    font-size: 9px;
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls {
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 18px;
+}
+
+.controls button {
+    position: relative;
+
+    padding: 11px 22px;
+
+    border: 1px solid var(--accent);
+
+    background: var(--accent-dim);
+
+    color: var(--accent);
+
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: var(--accent);
+
+    color: var(--black);
+
+    box-shadow:
+        var(--glow-accent-strong);
+}
+
+.controls button:active {
+    transform: translateY(1px);
+}
+
+.controls button.secondary {
+    border-color: var(--line);
+
+    background: transparent;
+
+    color: var(--silver-dim);
+}
+
+.controls button.secondary:hover {
+    border-color: var(--silver-dim);
+
+    background: var(--panel2);
+
+    color: var(--white);
+
+    box-shadow: none;
+}
+
+.controls button:disabled {
+    opacity: 0.35;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   MODE SWITCH
+========================================================= */
+
+.modeswitch {
+    display: flex;
+
+    border-top: 1px solid var(--line);
+
+    background: var(--black-2);
+}
+
+.modeswitch button {
+    position: relative;
+
+    flex: 1;
+
+    padding: 12px 8px;
+
+    border: none;
+    border-right: 1px solid var(--line);
+
+    background: none;
+
+    color: var(--silver-dim);
+
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+}
+
+.modeswitch button:last-child {
+    border-right: none;
+}
+
+.modeswitch button:hover {
+    color: var(--white);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.015
+        );
+}
+
+.modeswitch button.active {
+    color: var(--accent);
+
+    background:
+        rgba(
+            var(--accent-rgb),
+            0.075
+        );
+}
+
+.modeswitch button.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 20%;
+    right: 20%;
+    bottom: 0;
+
+    height: 2px;
+
+    background: var(--accent);
+
+    box-shadow:
+        0 0 8px
+        rgba(
+            var(--accent-rgb),
+            0.45
+        );
+}
+
+
+/* =========================================================
+   TEAM SELECT — MERCEDES SKIN
+========================================================= */
+
+.team-select-overlay {
+    background:
+        radial-gradient(
+            circle at 20% 0%,
+            rgba(
+                var(--accent-rgb),
+                0.08
+            ),
+            transparent 40%
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 0px,
+            rgba(
+                255,
+                255,
+                255,
+                0.012
+            ) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+
+        var(--background);
+}
+
+
+/* =========================================================
+   FOOTER — MERCEDES
+========================================================= */

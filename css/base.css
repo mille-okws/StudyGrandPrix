@@ -1,0 +1,1835 @@
+/* =========================================================
+   SILVER ARROW
+   BASE UI SYSTEM
+
+   Shared structure
+   Shared dimensions
+   Shared components
+   Shared responsive behavior
+
+   TEAM SKINS:
+   - colors
+   - visual identity
+   - decorations
+   - effects
+   ========================================================= */
+
+
+/* =========================================================
+   CORE
+   ========================================================= */
+
+:root {
+
+    /* -----------------------------------------------------
+       STRUCTURAL COLORS
+       ----------------------------------------------------- */
+
+    --black: #070707;
+    --black-2: #0a0a0a;
+
+    --panel: #101010;
+    --panel2: #151515;
+    --panel3: #1b1b1b;
+
+    --line: #292929;
+    --line-bright: #3d3d3d;
+
+    --silver: #bdbdbd;
+    --silver-dim: #777777;
+    --silver-dark: #444444;
+
+    --white: #f2f2f2;
+
+    /* -----------------------------------------------------
+       TEAM FALLBACK
+       ----------------------------------------------------- */
+
+    --accent: #00d7b9;
+    --accent-bright: #35ffe3;
+    --accent-dark: #087c6d;
+    --accent-dim: #084c44;
+
+    --accent-rgb: 0, 215, 185;
+
+    /* -----------------------------------------------------
+       STATUS
+       ----------------------------------------------------- */
+
+    --red: #ff4d4d;
+    --amber: #ffb020;
+    --yellow: #fff200;
+    --green: #b8d400;
+
+    /* -----------------------------------------------------
+       TYPOGRAPHY
+       ----------------------------------------------------- */
+
+    --mono:
+        "JetBrains Mono",
+        "IBM Plex Mono",
+        "Courier New",
+        monospace;
+
+    --display:
+        "Rajdhani",
+        "Titillium Web",
+        Arial,
+        sans-serif;
+
+    /* -----------------------------------------------------
+       EFFECTS
+       ----------------------------------------------------- */
+
+    --glow-accent:
+        0 0 14px
+        rgba(
+            var(--accent-rgb),
+            0.18
+        );
+
+    --glow-accent-strong:
+        0 0 20px
+        rgba(
+            var(--accent-rgb),
+            0.35
+        );
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    background:
+        var(--background, var(--black));
+
+    color:
+        var(--silver);
+
+    font-family:
+        var(--mono);
+
+    -webkit-font-smoothing:
+        antialiased;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+button {
+    user-select: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+
+    outline:
+        1px solid var(--accent);
+
+    outline-offset: 2px;
+}
+
+a {
+    color:
+        var(--accent);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+
+    background:
+        var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+
+    background:
+        var(--line-bright);
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+    background:
+        var(--accent-dim);
+}
+
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.wrap {
+
+    width: 100%;
+
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    padding:
+        22px 18px 60px;
+}
+
+.main-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1.15fr 1fr;
+
+    gap: 20px;
+
+    align-items: start;
+}
+
+.lower-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr;
+
+    gap: 20px;
+
+    margin-top: 20px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+.session-panel,
+.picker-panel,
+.box-panel {
+
+    position: relative;
+
+    background:
+        var(--panel);
+
+    border:
+        1px solid var(--line);
+
+    box-shadow:
+        0 10px 30px
+        rgba(0, 0, 0, 0.18),
+
+        inset 0 1px 0
+        rgba(
+            255,
+            255,
+            255,
+            0.012
+        );
+}
+
+
+/* =========================================================
+   PANEL HEADERS
+   ========================================================= */
+
+.session-head,
+.picker-head,
+.box-head {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px 16px;
+
+    border-bottom:
+        1px solid var(--line);
+}
+
+.session-head h2,
+.picker-head h2,
+.box-head h2 {
+
+    margin: 0;
+
+    color:
+        var(--white);
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+}
+
+.session-head span,
+.picker-head span,
+.box-head span {
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.eyebrow {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        var(--accent);
+
+    font-size: 8px;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   BOX BODY
+   ========================================================= */
+
+.box-body {
+
+    padding: 16px;
+}
+
+.subject-body {
+
+    padding-bottom: 16px;
+
+    border-bottom:
+        1px solid var(--line);
+}
+
+
+/* =========================================================
+   SUBJECT SELECT
+   ========================================================= */
+
+.subject-select {
+
+    margin-bottom: 14px;
+}
+
+.subject-select:last-child {
+
+    margin-bottom: 0;
+}
+
+.subject-select label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 8px;
+
+    letter-spacing: 1.5px;
+}
+
+.subject-select select,
+.subject-select input {
+
+    width: 100%;
+
+    padding:
+        9px 10px;
+
+    border:
+        1px solid var(--line);
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--black-2),
+            var(--black)
+        );
+
+    color:
+        var(--white);
+
+    font-family:
+        var(--mono);
+
+    font-size: 10px;
+
+    cursor: pointer;
+}
+
+.subject-select select:hover,
+.subject-select input:hover {
+
+    border-color:
+        var(--line-bright);
+}
+
+.subject-select select:focus,
+.subject-select input:focus {
+
+    outline: none;
+
+    border-color:
+        var(--accent);
+
+    box-shadow:
+        0 0 0 1px
+        rgba(
+            var(--accent-rgb),
+            0.08
+        );
+}
+
+
+/* =========================================================
+   SLEEP INPUT
+   ========================================================= */
+
+.sleep-input-group {
+
+    margin-bottom: 16px;
+
+    padding-bottom: 14px;
+
+    border-bottom:
+        1px dashed var(--line);
+}
+
+.sleep-input-group input {
+
+    cursor: text;
+}
+
+
+/* =========================================================
+   ENGINEER
+   ========================================================= */
+
+.engineer {
+
+    display: flex;
+
+    align-items:
+        baseline;
+
+    gap: 8px;
+
+    padding:
+        12px 16px;
+
+    border-top:
+        1px dashed var(--line);
+
+    color:
+        var(--silver-dim);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+.engineer b {
+
+    flex-shrink: 0;
+
+    color:
+        var(--accent);
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   RATING PANEL
+   ========================================================= */
+
+.rating-panel {
+
+    padding: 16px;
+
+    border-top:
+        1px solid var(--accent);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(
+                var(--accent-rgb),
+                0.07
+            ),
+            rgba(
+                var(--accent-rgb),
+                0.02
+            )
+        );
+}
+
+.rating-panel[hidden] {
+    display: none;
+}
+
+.rating-panel .rtitle {
+
+    margin-bottom: 12px;
+
+    color:
+        var(--accent);
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+}
+
+.rating-row {
+
+    margin-bottom: 12px;
+}
+
+.rating-row .rlabel {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom: 6px;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+}
+
+.rating-row .rlabel b {
+
+    color:
+        var(--white);
+}
+
+.rating-row input[type="range"] {
+
+    width: 100%;
+
+    accent-color:
+        var(--accent);
+
+    cursor: pointer;
+}
+
+.rating-submit {
+
+    width: 100%;
+
+    margin-top: 4px;
+
+    padding: 10px;
+
+    border:
+        1px solid var(--accent);
+
+    background:
+        var(--accent-dim);
+
+    color:
+        var(--accent);
+
+    font-family:
+        var(--mono);
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+}
+
+.rating-submit:hover {
+
+    background:
+        var(--accent);
+
+    color:
+        var(--black);
+
+    box-shadow:
+        var(--glow-accent);
+}
+
+
+/* =========================================================
+   CAR STATUS
+   ========================================================= */
+
+.car-attr {
+
+    margin-bottom: 14px;
+}
+
+.car-attr:last-child {
+
+    margin-bottom: 0;
+}
+
+.car-attr-row {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom: 5px;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+}
+
+.car-attr-row .attr-name {
+
+    color:
+        var(--silver-dim);
+}
+
+.car-attr-row .attr-name small {
+
+    display: block;
+
+    margin-top: 1px;
+
+    color:
+        var(--silver-dim);
+
+    opacity: 0.7;
+
+    font-size: 8px;
+
+    letter-spacing: 0.5px;
+
+    text-transform: none;
+}
+
+.car-attr-row .attr-val {
+
+    color:
+        var(--accent);
+
+    font-weight: 600;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+
+/* =========================================================
+   BARS
+   ========================================================= */
+
+.bar-track {
+
+    position: relative;
+
+    height: 7px;
+
+    overflow: hidden;
+
+    background:
+        var(--panel2);
+
+    border:
+        1px solid var(--line);
+}
+
+.bar-fill {
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--accent-dim),
+            var(--accent)
+        );
+
+    box-shadow:
+        0 0 7px
+        rgba(
+            var(--accent-rgb),
+            0.25
+        );
+}
+
+
+/* =========================================================
+   DRIVER CONDITION
+   ========================================================= */
+
+.driver-condition {
+
+    position: relative;
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top:
+        1px dashed var(--line);
+}
+
+.driver-condition::before {
+
+    content:
+        "DRIVER SYSTEM";
+
+    position: absolute;
+
+    top: -6px;
+
+    left: 0;
+
+    padding-right: 8px;
+
+    background:
+        var(--panel);
+
+    color:
+        var(--silver-dark);
+
+    font-size: 8px;
+
+    letter-spacing: 1.5px;
+}
+
+.condition-header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+}
+
+.condition-header span {
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+}
+
+.condition-header strong {
+
+    color:
+        var(--accent);
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.condition-row,
+.condition-sleep {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-top: 7px;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+}
+
+.condition-row strong,
+.condition-sleep strong {
+
+    color:
+        var(--white);
+
+    font-size: 9px;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.driver-condition .bar-track {
+
+    height: 10px;
+}
+
+.driver-condition .bar-fill {
+
+    transition:
+        width 300ms ease,
+        background 200ms ease;
+}
+
+
+/* =========================================================
+   REST STATES
+   ========================================================= */
+
+.driver-condition.warning .bar-fill {
+
+    background:
+        linear-gradient(
+            90deg,
+            #704800,
+            var(--amber)
+        );
+}
+
+.driver-condition.warning
+.condition-header strong {
+
+    color:
+        var(--amber);
+}
+
+.driver-condition.danger .bar-fill {
+
+    background:
+        linear-gradient(
+            90deg,
+            #641f1f,
+            var(--red)
+        );
+}
+
+.driver-condition.danger
+.condition-header strong {
+
+    color:
+        var(--red);
+}
+
+
+/* =========================================================
+   TELEMETRY
+   ========================================================= */
+
+.telemetry-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 1px;
+
+    background:
+        var(--line);
+
+    border:
+        1px solid var(--line);
+}
+
+.telemetry-cell {
+
+    padding:
+        10px 12px;
+
+    background:
+        var(--panel);
+}
+
+.telemetry-cell .tlabel {
+
+    margin-bottom: 5px;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 8px;
+
+    letter-spacing: 1.5px;
+}
+
+.telemetry-cell .tval {
+
+    color:
+        var(--white);
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.telemetry-cell .tval.teal {
+
+    color:
+        var(--accent);
+}
+
+.telemetry-cell .tval.amber {
+
+    color:
+        var(--amber);
+}
+
+.telemetry-cell .tval.red {
+
+    color:
+        var(--red);
+}
+
+.telemetry-note {
+
+    padding:
+        10px 16px;
+
+    border-top:
+        1px dashed var(--line);
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FOCUS CHART
+   ========================================================= */
+
+.chart-svg {
+
+    width: 100%;
+
+    height: 140px;
+}
+
+.chart-axis-line {
+
+    stroke:
+        var(--line);
+
+    stroke-width: 1;
+}
+
+.chart-line {
+
+    fill: none;
+
+    stroke:
+        var(--accent);
+
+    stroke-width: 2;
+
+    filter:
+        drop-shadow(
+            0 0 3px
+            rgba(
+                var(--accent-rgb),
+                0.6
+            )
+        );
+}
+
+.chart-dot {
+
+    fill:
+        var(--white);
+}
+
+.chart-label {
+
+    fill:
+        var(--silver-dim);
+
+    font-family:
+        var(--mono);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   CIRCUIT PICKER
+   ========================================================= */
+
+.circuit-list {
+
+    max-height: 560px;
+
+    overflow-y: auto;
+}
+
+.circuit-row {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        10px 16px;
+
+    border-bottom:
+        1px solid var(--line);
+
+    cursor: pointer;
+
+    transition:
+        background 100ms ease,
+        padding-left 100ms ease;
+}
+
+.circuit-row:hover {
+
+    background:
+        var(--panel2);
+}
+
+.circuit-row.active {
+
+    padding-left: 14px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(
+                var(--accent-rgb),
+                0.10
+            ),
+            rgba(
+                var(--accent-rgb),
+                0.025
+            )
+        );
+
+    border-left:
+        2px solid var(--accent);
+
+    box-shadow:
+        inset 10px 0 20px
+        rgba(
+            var(--accent-rgb),
+            0.025
+        );
+}
+
+.circuit-row .rd {
+
+    width: 26px;
+
+    flex-shrink: 0;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+}
+
+.circuit-row .mini-track {
+
+    width: 46px;
+
+    height: 32px;
+
+    flex-shrink: 0;
+
+    opacity: 0.8;
+}
+
+.circuit-row:hover .mini-track,
+.circuit-row.active .mini-track {
+
+    opacity: 1;
+}
+
+.circuit-row .mini-track svg {
+
+    width: 100%;
+
+    height: 100%;
+}
+
+.circuit-row .mini-track .track-line {
+
+    stroke-width: 4;
+}
+
+.circuit-row .rinfo {
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+.circuit-row .rname {
+
+    color:
+        var(--white);
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.circuit-row .rmeta {
+
+    margin-top: 2px;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.circuit-row .rlaps {
+
+    flex-shrink: 0;
+
+    color:
+        var(--accent);
+
+    font-size: 10px;
+
+    text-align: right;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.circuit-row .rlaps small {
+
+    display: block;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+}
+
+.status-tag {
+
+    flex-shrink: 0;
+
+    padding:
+        2px 5px;
+
+    border:
+        1px solid currentColor;
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+}
+
+.status-tag.cancel {
+
+    color:
+        var(--red);
+}
+
+.status-tag.next {
+
+    color:
+        var(--amber);
+}
+
+
+/* =========================================================
+   TEAM SELECTION OVERLAY
+   ========================================================= */
+
+.team-select-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    overflow-y: auto;
+
+    background:
+        var(--background);
+
+    color:
+        var(--silver);
+}
+
+.team-select-overlay.is-open {
+
+    display: block;
+}
+
+body.team-selection-open {
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TEAM SELECT PANEL
+   ========================================================= */
+
+.team-select-panel {
+
+    width:
+        min(
+            1100px,
+            calc(100% - 40px)
+        );
+
+    min-height: 100vh;
+
+    margin: 0 auto;
+
+    padding:
+        70px 0 40px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+
+/* =========================================================
+   TEAM SELECT HEADER
+   ========================================================= */
+
+.team-select-header {
+
+    position: relative;
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    gap: 30px;
+
+    margin-bottom: 34px;
+
+    padding-left: 20px;
+
+    border-left:
+        3px solid var(--accent);
+}
+
+.team-select-header h1 {
+
+    margin: 0;
+
+    color:
+        var(--white);
+
+    font-family:
+        "Rajdhani",
+        var(--mono),
+        sans-serif;
+
+    font-size:
+        clamp(
+            42px,
+            7vw,
+            76px
+        );
+
+    line-height: 0.9;
+
+    letter-spacing:
+        0.04em;
+}
+
+.team-select-header p {
+
+    margin:
+        16px 0 0;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.team-select-close {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    border:
+        1px solid var(--line);
+
+    background:
+        transparent;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.team-select-close:hover {
+
+    color:
+        var(--accent);
+
+    border-color:
+        var(--accent);
+
+    background:
+        rgba(
+            var(--accent-rgb),
+            0.05
+        );
+}
+
+
+/* =========================================================
+   TEAM SELECT GRID
+   ========================================================= */
+
+.team-select-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            1fr
+        );
+
+    gap: 14px;
+}
+
+
+/* =========================================================
+   TEAM SELECT CARD
+   ========================================================= */
+
+.team-select-card {
+
+    position: relative;
+
+    min-height: 260px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    padding: 22px;
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--team-accent)
+            25%,
+            transparent
+        );
+
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(
+                in srgb,
+                var(--team-accent)
+                7%,
+                transparent
+            ),
+            transparent 60%
+        );
+
+    color:
+        var(--silver);
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.team-select-card:hover {
+
+    transform:
+        translateY(-4px);
+
+    border-color:
+        var(--team-accent);
+
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(
+                in srgb,
+                var(--team-accent)
+                10%,
+                transparent
+            ),
+            transparent 65%
+        );
+}
+
+.team-select-card.selected {
+
+    border:
+        2px solid
+        var(--team-accent);
+
+    box-shadow:
+        0 0 30px
+        color-mix(
+            in srgb,
+            var(--team-accent)
+            12%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   TEAM SELECT CARD CONTENT
+   ========================================================= */
+
+.team-select-card__status {
+
+    color:
+        var(--team-accent);
+
+    font-size: 8px;
+
+    letter-spacing: 2px;
+}
+
+.team-select-card__team {
+
+    margin-top: 58px;
+
+    color:
+        var(--white);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+    letter-spacing:
+        0.08em;
+}
+
+.team-select-card__project {
+
+    margin-top: 8px;
+
+    color:
+        var(--team-accent);
+
+    font-family:
+        "Rajdhani",
+        var(--mono),
+        sans-serif;
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    letter-spacing:
+        0.04em;
+}
+
+.team-select-card__style {
+
+    position: absolute;
+
+    left: 22px;
+
+    bottom: 20px;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 8px;
+
+    letter-spacing: 1.5px;
+}
+
+
+/* =========================================================
+   TEAM SELECT FOOTER
+   ========================================================= */
+
+.team-select-footer {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-top: 20px;
+
+    padding-top: 12px;
+
+    border-top:
+        1px solid var(--line);
+
+    color:
+        var(--silver-dark);
+
+    font-size: 8px;
+
+    letter-spacing: 1.5px;
+}
+
+.team-select-footer span:last-child {
+
+    color:
+        var(--accent);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+
+    margin-top: 20px;
+
+    padding:
+        24px 0;
+
+    color:
+        var(--silver-dim);
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+    line-height: 1.8;
+
+    text-align: center;
+
+    opacity: 0.8;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 920px) {
+
+    .main-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .lower-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+}
+
+
+@media (max-width: 800px) {
+
+    .team-select-panel {
+
+        width:
+            min(
+                calc(100% - 28px),
+                600px
+            );
+
+        padding:
+            40px 0;
+    }
+
+    .team-select-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .team-select-header h1 {
+
+        font-size: 48px;
+    }
+
+    .team-select-card {
+
+        min-height: 210px;
+    }
+
+    .team-select-card__project {
+
+        font-size: 28px;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .topbar {
+
+        align-items:
+            flex-start;
+    }
+
+    .topbar-right {
+
+        width: 100%;
+
+        justify-content:
+            space-between;
+
+        gap: 10px;
+
+        flex-wrap: wrap;
+    }
+
+    .topbar-right > div::before {
+
+        display: none;
+    }
+
+    .trackview {
+
+        height: 240px;
+    }
+
+    .timer-display {
+
+        font-size: 52px;
+    }
+
+    .modeswitch {
+
+        overflow-x: auto;
+    }
+
+    .modeswitch button {
+
+        min-width: 110px;
+
+        font-size: 8px;
+
+        letter-spacing: 1px;
+    }
+
+    .session-head,
+    .picker-head,
+    .box-head {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+    }
+}
+
+
+@media (max-width: 520px) {
+
+    .wrap {
+
+        padding:
+            14px 10px 40px;
+    }
+
+    .brand-text .t1 {
+
+        font-size: 13px;
+    }
+
+    .brand-text .t2 {
+
+        font-size: 8px;
+    }
+
+    .timer-display {
+
+        font-size: 46px;
+    }
+
+    .controls button {
+
+        padding:
+            10px 14px;
+
+        font-size: 9px;
+    }
+
+    .summary .cell {
+
+        padding:
+            10px 12px;
+    }
+
+    .summary .value {
+
+        font-size: 17px;
+    }
+
+    .circuit-row {
+
+        gap: 8px;
+
+        padding:
+            9px 10px;
+    }
+
+    .circuit-row .mini-track {
+
+        width: 40px;
+    }
+
+    .team-select-header {
+
+        padding-left: 14px;
+    }
+
+    .team-select-header h1 {
+
+        font-size: 38px;
+    }
+
+    .team-select-header p {
+
+        font-size: 10px;
+    }
+
+    .team-select-card {
+
+        min-height: 190px;
+
+        padding: 18px;
+    }
+
+    .team-select-card__project {
+
+        font-size: 25px;
+    }
+
+    .team-select-footer {
+
+        flex-direction:
+            column;
+
+        gap: 6px;
+    }
+
+    footer {
+
+        font-size: 8px;
+
+        letter-spacing: 1px;
+    }
+}
