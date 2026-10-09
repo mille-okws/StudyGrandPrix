@@ -1,3 +1,5 @@
+import { renderChampionship } from "./js/championship.js";
+import { initializeSubjects, getSelectedSubject } from "./js/subjects.js";
 
 // ============================================================
 // SILVER ARROW
@@ -92,28 +94,13 @@ const state = {
     completedLaps: 0,
 
     sessionLapLimit: null,
+    awaitingNextLap: false,
 
     rest: 0,
 
     pendingLap: null,
 
     currentDateKey: todayKey()
-
-};
-
-
-// ============================================================
-// ENGINEERING SUBJECTS
-// ============================================================
-
-const ENG_SUBJECTS = {
-
-    calculo: true,
-    estruturas: true,
-    termo: true,
-    eletrica: true,
-    programacao: true,
-    outra: false
 
 };
 
@@ -573,22 +560,22 @@ function recoverRest(amount) {
 function getRestStatus(rest) {
 
     if (rest >= 80) {
-        return "OPTIMAL";
+        return "ÓTIMA";
     }
 
     if (rest >= 60) {
-        return "GOOD";
+        return "BOA";
     }
 
     if (rest >= 40) {
-        return "DEGRADED";
+        return "REDUZIDA";
     }
 
     if (rest >= 20) {
-        return "CRITICAL";
+        return "CRÍTICA";
     }
 
-    return "BOX REQUIRED";
+    return "PAUSA NECESSÁRIA";
 
 }
 
@@ -652,7 +639,7 @@ function updateRestDisplay() {
         sleepValue.textContent =
             sleep === null
                 ? "--"
-                : `${sleep.toFixed(1)}H`;
+                : `${sleep.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}H`;
 
     }
 
@@ -699,6 +686,16 @@ function updateDisplay() {
             ? "EM PISTA"
             : "SESSÃO PARADA";
 
+    const startButton = document.getElementById("startBtn");
+    if (startButton) startButton.textContent = state.pendingLap ? "[ CONFIRMAR ]" : state.running ? "[ PAUSAR ]" : "[ INICIAR ]";
+    const modeHelp = document.getElementById("modeHelp");
+    if (modeHelp) {
+        const mode = MODES[state.mode];
+        modeHelp.textContent = mode.type === "break" ? `${mode.minutes} minutos de descanso. Recupera energia e não conta como estudo.`
+            : mode.type === "practice" ? "25 minutos de estudo · uma volta · avaliação ao final."
+            : `${state.sessionLapLimit || 0} ${mode.type === "qualy" ? "etapas" : "voltas"} de 5 minutos · avaliação entre voltas. ${mode.type === "race" && !state.currentRaceId ? "Selecione um circuito." : ""}`;
+    }
+
     if (timerSub) {
 
         // ----------------------------------------------------
@@ -711,7 +708,7 @@ function updateDisplay() {
                 getCurrentRaceLaps();
 
             timerSub.innerHTML =
-                `${sessionText} · LAP ${state.currentLap}/${total}`;
+                `${sessionText} · VOLTA ${state.currentLap}/${total}`;
 
         }
 
@@ -724,7 +721,7 @@ function updateDisplay() {
         ) {
 
             timerSub.innerHTML =
-                `${sessionText} · Q${state.currentLap}/${MODES.qualy.laps}`;
+                `${sessionText} · CLASSIFICAÇÃO ${state.currentLap}/${state.sessionLapLimit || MODES.qualy.laps}`;
 
         }
 
@@ -879,22 +876,15 @@ function registerCompletedLap() {
     // PENDING RATING
     // --------------------------------------------------------
 
-    const subject =
-        document.getElementById(
-            "subjectSelect"
-        )?.value || "outra";
+    const subject = state.sessionSubject || getSelectedSubject();
 
     state.pendingLap = {
 
         circuitId:
             state.currentRaceId,
 
-        subject,
-
-        isEng:
-            Boolean(
-                ENG_SUBJECTS[subject]
-            ),
+        subject: subject.id,
+        subjectName: subject.name,
 
         duration,
 
@@ -995,15 +985,15 @@ function openPendingRating() {
 
     if (panel) {
 
-        panel.style.display =
-            "block";
+        panel.hidden = false;
+        panel.style.removeProperty("display");
 
     }
 
 }
 
 
-function submitPendingRating() {
+function submitPendingRating({ resume = true } = {}) {
 
     if (!state.pendingLap) {
         return;
@@ -1074,8 +1064,8 @@ function submitPendingRating() {
 
     if (panel) {
 
-        panel.style.display =
-            "none";
+        panel.hidden = true;
+        panel.style.removeProperty("display");
 
     }
 
@@ -1086,6 +1076,10 @@ function submitPendingRating() {
     renderCarStatus();
     renderTelemetry();
     renderFocusChart();
+    updateDisplay();
+    const continueSession = state.awaitingNextLap;
+    state.awaitingNextLap = false;
+    if (resume && continueSession) startTimer();
 
 }
 
@@ -1246,23 +1240,9 @@ function carStats() {
     // AERO
     // --------------------------------------------------------
 
-    const engineeringSessions =
-        sessions.filter(
-            session =>
-                session.isEng
-        );
-
-    const aero =
-        engineeringSessions.length
-            ? Math.round(
-                avg(
-                    engineeringSessions.map(
-                        session =>
-                            session.completion
-                    )
-                )
-            )
-            : 0;
+    const aero = sessions.length
+        ? Math.round(avg(sessions.map(session => session.completion)))
+        : 0;
 
     // --------------------------------------------------------
     // POWER UNIT
@@ -1325,31 +1305,31 @@ function renderCarStatus() {
     const attributes = [
 
         {
-            name: "CHASSIS",
+            name: "CHASSI",
             sub: "base de conhecimento",
             value: car.chassis
         },
 
         {
-            name: "AERO",
-            sub: "matérias de engenharia",
+            name: "AERODINÂMICA",
+            sub: "conclusão das tarefas",
             value: car.aero
         },
 
         {
-            name: "POWER UNIT",
+            name: "MOTOR",
             sub: "horas de sono",
             value: car.powerUnit
         },
 
         {
-            name: "TYRES",
+            name: "PNEUS",
             sub: "consistência",
             value: car.tyres
         },
 
         {
-            name: "DRIVER",
+            name: "PILOTO",
             sub: "desempenho",
             value: car.driver
         }
@@ -1509,7 +1489,7 @@ function renderTelemetry() {
 
         paceStr =
             (diff >= 0 ? "+" : "") +
-            diff.toFixed(2);
+            diff.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     }
 
@@ -1580,7 +1560,7 @@ function renderTelemetry() {
         },
 
         {
-            label: "PACE",
+            label: "RITMO",
             value: paceStr,
             cls: "teal"
         },
@@ -1891,6 +1871,7 @@ function renderFocusChart() {
 // ============================================================
 
 function renderSummary() {
+    renderChampionship(state.store);
 
     checkDateRollover();
 
@@ -2108,6 +2089,7 @@ function bindEvents() {
                 if (state.pendingLap) {
 
                     submitPendingRating();
+                    return;
 
                 }
 
@@ -2137,7 +2119,7 @@ function bindEvents() {
 
                 if (state.pendingLap) {
 
-                    submitPendingRating();
+                    submitPendingRating({ resume: false });
 
                 }
 
@@ -2166,7 +2148,7 @@ function bindEvents() {
                             state.pendingLap
                         ) {
 
-                            submitPendingRating();
+                            submitPendingRating({ resume: false });
 
                         }
 
@@ -2288,7 +2270,7 @@ function bindEvents() {
 
                 if (
                     Number.isNaN(hours) ||
-                    hours < 0
+                    hours < 0 || hours > 14
                 ) {
 
                     return;
@@ -2355,7 +2337,7 @@ function bindEvents() {
 function initializeApp() {
 
     console.log(
-        "SILVER ARROW // BOOT"
+        "SILVER ARROW // INICIALIZAÇÃO"
     );
 
     // ========================================================
@@ -2363,7 +2345,7 @@ function initializeApp() {
     // ========================================================
 
     console.log(
-        "STORAGE // normalizing"
+        "DADOS // normalizando"
     );
 
     normalizeDailyStore();
@@ -2379,12 +2361,15 @@ function initializeApp() {
     // ========================================================
 
     console.log(
-        "TEAM // initializing"
+        "EQUIPE // inicializando"
     );
 
     initializeTeam();
 
     initializeTeamSelection();
+    initializeSubjects(state.store.sessions);
+    // Also close a week when the app remains open without a running timer.
+    setInterval(() => { checkDateRollover(); renderChampionship(state.store); }, 60000);
 
 
     // ========================================================
@@ -2392,7 +2377,7 @@ function initializeApp() {
     // ========================================================
 
     console.log(
-        "SESSION // initializing"
+        "SESSÃO // inicializando"
     );
 
     initializeSessionManager({
@@ -2413,6 +2398,7 @@ function initializeApp() {
         registerCompletedLap,
 
         openPendingRating,
+        submitPendingRating,
 
         renderSummary,
 
@@ -2430,7 +2416,7 @@ function initializeApp() {
     // ========================================================
 
     console.log(
-        "TRACK // initializing"
+        "PISTA // inicializando"
     );
 
     initializeTrackRendering({
@@ -2543,7 +2529,7 @@ function initializeApp() {
     // ========================================================
 
     console.log(
-        "SILVER ARROW // SYSTEM READY"
+        "SILVER ARROW // SISTEMA PRONTO"
     );
 
 }

@@ -138,8 +138,8 @@ function renderTeamSelection(container, options = {}) {
         card.innerHTML = `
             <span class="team-select-card__status">
                 ${team.id === currentTeam.id
-                    ? "SELECTED"
-                    : "AVAILABLE"
+                    ? "SELECIONADA"
+                    : "DISPONÍVEL"
                 }
             </span>
 
@@ -220,8 +220,8 @@ function updateSelectionState(team) {
 
         if (status) {
             status.textContent = selected
-                ? "SELECTED"
-                : "AVAILABLE";
+                ? "SELECIONADA"
+                : "DISPONÍVEL";
         }
     });
 
@@ -254,7 +254,7 @@ function updateTeamButton(team) {
     }
 
     button.textContent =
-        `TEAM // ${team.shortName}`;
+        `EQUIPE // ${team.shortName}`;
 }
 
 

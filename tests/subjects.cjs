@@ -1,0 +1,52 @@
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+(async()=>{
+ const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+ try {
+ const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.clock.install();
+ await p.goto('http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+ await p.locator('.team-select-card[data-team="astonmartin"]').click();
+ assert.ok(!(await p.locator('#subjectSelect').innerText()).includes('engenharia'));
+ await p.locator('.subject-manager summary').click();
+ async function add(name){await p.locator('#newSubjectName').fill(name);await p.locator('#addSubjectForm button').click();}
+ await add('Direito Constitucional');
+ const id=await p.locator('#subjectSelect').inputValue();
+ await add('  direito   constitucional  ');
+ assert.match(await p.locator('#subjectStatus').innerText(),/já está/);
+ assert.equal(await p.locator('#subjectSelect option').count(),7);
+ await p.locator('#editSubjectName').fill('Direito');await p.locator('#editSubjectForm button[type="submit"]').click();
+ assert.equal(await p.locator('#subjectSelect').inputValue(),id);
+ await p.reload({waitUntil:'networkidle'});
+ assert.equal(await p.locator('#subjectSelect').inputValue(),id);
+ assert.equal(await p.locator('#subjectSelect option:checked').innerText(),'Direito');
+ await p.locator('.circuit-row').first().click();
+ await p.locator('#sleepInput').fill('8');await p.locator('#sleepInput').dispatchEvent('change');
+ await p.locator('#startBtn').click();
+ await p.locator('#subjectSelect').selectOption('historia');
+ await p.clock.runFor(1500000);
+ assert.ok(await p.locator('#ratingPanel').isVisible());
+ await p.locator('#ratingSubmit').click();
+ const session=await p.evaluate(()=>JSON.parse(localStorage.getItem('silverArrowPomodoro2026')).sessions.at(-1));
+ assert.equal(session.subject,id);assert.equal(session.subjectName,'Direito');
+ assert.equal(session.isEng,undefined);
+ assert.equal(await p.locator('.car-attr').filter({hasText:'AERODINÂMICA'}).locator('.attr-val').innerText(),session.completion+'%');
+ await p.locator('.subject-manager summary').click();await p.locator('#subjectSelect').selectOption(id);
+ await p.locator('#deleteSubjectBtn').click();
+ assert.equal(await p.locator(`#subjectSelect option[value="${id}"]`).count(),0);
+ assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem('silverArrowPomodoro2026')).sessions.at(-1).subjectName),'Direito');
+ await add('<img src=x onerror=alert(1)>');
+ assert.equal(await p.locator('#subjectSelect option:checked').innerText(),'<img src=x onerror=alert(1)>');
+ assert.equal(await p.locator('.subject-body img').count(),0);
+ while(await p.locator('#subjectSelect option').count()>1) await p.locator('#deleteSubjectBtn').click();
+ await p.locator('#deleteSubjectBtn').click();assert.match(await p.locator('#subjectStatus').innerText(),/ao menos uma/);
+ await p.setViewportSize({width:320,height:844});
+ assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.deepEqual(errors,[]);
+ const old=await b.newPage();await old.addInitScript(()=>{localStorage.setItem('silverArrowTeam','mercedes');localStorage.setItem('silverArrowPomodoro2026',JSON.stringify({laps:1,totalSeconds:1500,sessions:[{subject:'estruturas',isEng:true,completion:80,focus:8,errors:0,dateKey:'2026-10-09'}]}));});
+ await old.goto('http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+ assert.equal(await old.locator('#subjectSelect option[value="estruturas"]').innerText(),'Estruturas / Resistência dos Materiais');
+ assert.equal(await old.evaluate(()=>JSON.parse(localStorage.getItem('silverArrowPomodoro2026')).sessions.length),1);
+ console.log('PASS: custom subjects add/rename/delete, duplicates, persistence, stable IDs, active-session attribution, completion for all subjects, preserved history, safe text rendering, last-item guard, mobile layout and legacy migration.');
+ }finally{await b.close();}
+})().catch(e=>{console.error(e);process.exitCode=1});

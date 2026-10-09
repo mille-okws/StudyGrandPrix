@@ -15,7 +15,7 @@
       rel="stylesheet"
   >
 
-  <title>PROJECT SILVER ARROW</title>
+  <title>PROJETO SILVER ARROW</title>
 </head>
 
 
@@ -36,11 +36,11 @@
 
       <div>
         <span class="eyebrow">
-          SILVER ARROW // INITIALIZATION
+          SILVER ARROW // INICIALIZAÇÃO
         </span>
 
         <h1>
-          SELECT YOUR CONSTRUCTOR
+          ESCOLHA SUA EQUIPE
         </h1>
 
         <p>
@@ -69,11 +69,11 @@
     <div class="team-select-footer">
 
       <span>
-        CONSTRUCTOR CONFIGURATION
+        CONFIGURAÇÃO DA EQUIPE
       </span>
 
       <span>
-        SYSTEM READY
+        SISTEMA PRONTO
       </span>
 
     </div>
@@ -107,7 +107,7 @@
       </div>
 
       <div class="t2">
-        MERCEDES-AMG STUDY CONTROL · POMODORO
+        MERCEDES-AMG CONTROLE DE ESTUDOS · POMODORO
       </div>
 
       <div
@@ -131,7 +131,7 @@
       </span>
 
       <b id="topSession">
-        FREE PRACTICE
+        TREINO LIVRE
       </b>
 
     </div>
@@ -168,7 +168,7 @@
       class="team-change-btn"
       id="changeTeamBtn"
     >
-      TEAM // MERCEDES
+      EQUIPE // MERCEDES
     </button>
 
   </div>
@@ -195,6 +195,25 @@
        MAIN GRID
   ======================================================== -->
 
+  <section class="championship-grid" aria-label="Campeonato e premiação semanal">
+    <section id="championshipCard" class="championship-card">
+      <div class="championship-heading"><span class="eyebrow">CAMPEONATO DE ESTUDOS</span><span id="championshipPeriod"></span></div>
+      <div class="championship-standing"><strong id="championshipPosition">P22</strong><span id="championshipMovement" aria-live="polite">— Primeira semana</span></div>
+      <p id="championshipProgress"></p>
+      <div id="championshipDays" class="championship-days" aria-label="Dias de estudo na semana"></div>
+      <p id="championshipComparison" class="championship-note"></p>
+      <details class="championship-rules"><summary>Como funciona a classificação?</summary><p>Semana de segunda a domingo. Estudar 25 minutos em cinco dias rende P1; nenhum estudo rende P22. Cada dia vale até 25 minutos para a posição: concentrar tudo em um dia não substitui a consistência. Durante a semana, a meta provisória cresce de um a cinco dias. Pausas não contam. A classificação é pessoal, em uma escala de 22 posições.</p></details>
+      <p id="championshipStorage" role="status" class="championship-note"></p>
+    </section>
+    <section id="weeklyAward" class="championship-card weekly-award">
+      <span class="eyebrow">PREMIAÇÃO SEMANAL</span>
+      <div class="award-result"><svg id="awardIcon" viewBox="0 0 48 48" width="48" height="48" aria-label="Troféu" role="img" hidden><path d="M14 6h20v12c0 9-5 13-10 13s-10-4-10-13V6Zm0 4H6v6c0 7 4 10 10 10m18-16h8v6c0 7-4 10-10 10M24 31v9m-8 2h16" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg><strong id="awardPosition">—</strong></div>
+      <h2 id="awardTitle">Sua primeira premiação está chegando</h2>
+      <p id="awardDescription"></p>
+      <p class="championship-note">O resultado da semana encerrada fica salvo neste navegador. Ouro para P1, prata para P2 e bronze para P3.</p>
+    </section>
+  </section>
+
   <main class="main-grid">
 
 
@@ -210,7 +229,7 @@
         <div>
 
           <span class="eyebrow">
-            CURRENT CIRCUIT
+            CIRCUITO ATUAL
           </span>
 
           <h2 id="circuitTitle">
@@ -237,7 +256,7 @@
           class="track-rd"
           id="trackRd"
         >
-          RD --
+          ETAPA --
         </span>
 
 
@@ -273,7 +292,7 @@
           class="session-type"
           id="sessionTypeLabel"
         >
-          FREE PRACTICE
+          TREINO LIVRE
         </div>
 
 
@@ -299,7 +318,7 @@
             type="button"
             id="startBtn"
           >
-            [ PUSH ]
+            [ INICIAR ]
           </button>
 
 
@@ -308,7 +327,7 @@
             class="secondary"
             id="resetBtn"
           >
-            [ BOX ]
+            [ REINICIAR ]
           </button>
 
         </div>
@@ -328,7 +347,7 @@
           data-mode="practice"
           class="active"
         >
-          FREE PRACTICE 25
+          TREINO LIVRE 25
         </button>
 
 
@@ -336,7 +355,7 @@
           type="button"
           data-mode="qualy"
         >
-          QUALIFYING
+          CLASSIFICAÇÃO
         </button>
 
 
@@ -344,7 +363,7 @@
           type="button"
           data-mode="race"
         >
-          RACE
+          CORRIDA
         </button>
 
 
@@ -352,7 +371,7 @@
           type="button"
           data-mode="short"
         >
-          PIT STOP 5
+          PAUSA CURTA 5
         </button>
 
 
@@ -360,7 +379,7 @@
           type="button"
           data-mode="long"
         >
-          BOX LONGO 15
+          PAUSA LONGA 15
         </button>
 
       </div>
@@ -371,6 +390,8 @@
            SUBJECT
       ==================================================== -->
 
+      <p id="modeHelp" class="mode-help">25 minutos de estudo · uma volta · avaliação ao final.</p>
+
       <div class="box-body subject-body">
 
         <div class="subject-select">
@@ -380,33 +401,28 @@
           </label>
 
 
-          <select id="subjectSelect">
-
-            <option value="calculo">
-              Cálculo / Matemática (engenharia)
-            </option>
-
-            <option value="estruturas">
-              Estruturas / Resistência dos Materiais (engenharia)
-            </option>
-
-            <option value="termo">
-              Termodinâmica / Fluidos (engenharia)
-            </option>
-
-            <option value="eletrica">
-              Eletricidade / Circuitos (engenharia)
-            </option>
-
-            <option value="programacao">
-              Programação / Controle (engenharia)
-            </option>
-
-            <option value="outra">
-              Outra matéria
-            </option>
-
-          </select>
+          <select id="subjectSelect" aria-describedby="subjectHelp"></select>
+          <p id="subjectHelp" class="subject-help">Escolha o que vai estudar. A matéria fica vinculada à sessão ao apertar INICIAR.</p>
+          <details class="subject-manager">
+            <summary>Personalizar matérias</summary>
+            <form id="addSubjectForm" class="subject-form">
+              <label for="newSubjectName">Nova matéria</label>
+              <div class="subject-actions">
+                <input id="newSubjectName" type="text" maxlength="80" required placeholder="Ex.: Direito, Música, Biologia" autocomplete="off">
+                <button type="submit">Adicionar</button>
+              </div>
+            </form>
+            <form id="editSubjectForm" class="subject-form">
+              <label for="editSubjectName">Editar a matéria selecionada</label>
+              <input id="editSubjectName" type="text" maxlength="80" required autocomplete="off">
+              <div class="subject-actions">
+                <button type="submit">Salvar nome</button>
+                <button id="deleteSubjectBtn" type="button" class="subject-delete">Excluir da lista</button>
+              </div>
+            </form>
+            <p class="subject-help">A lista é salva neste navegador. Excluir uma matéria não apaga as sessões anteriores.</p>
+          </details>
+          <p id="subjectStatus" class="subject-help" role="status" aria-live="polite"></p>
 
         </div>
 
@@ -421,11 +437,11 @@
       <div class="engineer">
 
         <b>
-          ENGINEER:
+          ENGENHEIRO:
         </b>
 
         <span id="engineerMsg">
-          Selecione um circuito e aperte PUSH
+          Selecione um circuito e aperte INICIAR
           para começar a sessão.
         </span>
 
@@ -444,7 +460,7 @@
       >
 
         <div class="rtitle">
-          DEBRIEF DA VOLTA —
+          AVALIAÇÃO DA VOLTA —
           COMO FOI A SESSÃO?
         </div>
 
@@ -553,7 +569,7 @@
         <div>
 
           <span class="eyebrow">
-            SESSION ROUTING
+            SELEÇÃO DE CIRCUITO
           </span>
 
           <h2>
@@ -596,7 +612,7 @@
 
       <div class="box-head">
 
-        <h2>
+        <h2 id="carTeamName">
           MERCEDES-AMG F1
         </h2>
 
@@ -646,7 +662,7 @@
           <div class="condition-header">
 
             <span>
-              DRIVER CONDITION:
+              CONDIÇÃO DO PILOTO:
             </span>
 
             <strong id="restStatus">
@@ -659,7 +675,7 @@
           <div class="condition-row">
 
             <span>
-              REST
+              ENERGIA
             </span>
 
             <strong id="restValue">
@@ -683,7 +699,7 @@
           <div class="condition-sleep">
 
             <span>
-              SLEEP
+              SONO
             </span>
 
             <strong id="sleepDisplay">
@@ -713,7 +729,7 @@
 
 
     <!-- =====================================================
-         STUDY TELEMETRY
+         TELEMETRIA DE ESTUDO
     ====================================================== -->
 
     <section class="box-panel">
@@ -721,7 +737,7 @@
       <div class="box-head">
 
         <h2>
-          STUDY TELEMETRY
+          TELEMETRIA DE ESTUDO
         </h2>
 
         <span id="telemetrySessionCount">
@@ -739,7 +755,7 @@
 
       <div class="telemetry-note">
 
-        PACE compara o foco médio de hoje
+        RITMO compara o foco médio de hoje
         com sua média histórica.
 
         CONSISTÊNCIA mede a regularidade
@@ -795,8 +811,8 @@
 
   <footer>
 
-    <span>
-      PROJECT SILVER ARROW · STUDY. ANALYZE. PUSH.
+    <span id="projectFooter">
+      PROJETO SILVER ARROW · ESTUDE. ANALISE. AVANCE.
     </span>
 
     <br>

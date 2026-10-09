@@ -48,7 +48,7 @@
 }
 
 .trackview::before {
-    content: "LIVE TRACK DATA";
+    content: "DADOS DA PISTA AO VIVO";
 
     position: absolute;
 

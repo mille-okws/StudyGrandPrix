@@ -1040,7 +1040,7 @@ body {
 .trackview::before {
 
     content:
-        "McLAREN // LIVE PERFORMANCE DATA";
+        "McLAREN // DESEMPENHO AO VIVO";
 
     position:
         absolute;
@@ -2155,4 +2155,44 @@ footer strong {
         min-width:
             100px;
     }
+}
+/* Papaya: bold orange, graphite surfaces and a restrained electric-blue edge. */
+:root { --background: #121417; --black: #0b0d10; --black-2: #13181e; --panel: #1a2026; --panel2: #252f38; --panel3: #303b47; --line: #39444f; --line-bright: #586d7e; --white: #f5f6ef; --silver: #d3dce1; --silver-dim: #a4b4c0; --silver-dark: #728c9d; --accent: #ff921f; --accent-bright: #ffb458; --accent-dim: #593410; --accent-rgb: 255, 146, 31; --blue: #63cefa; --display: Arial, sans-serif; }
+body { background: linear-gradient(135deg, #26313c, #121417 55%); }
+.topbar { background: #ff921f; border-bottom: 5px solid #141c23; padding: 22px max(22px, calc((100vw - 1240px) / 2)); min-height: 104px; gap: 24px; flex-wrap: wrap; }
+.topbar::before, .topbar::after { display: none; }
+.brand-mark { background: #172028; color: #ff921f; width: 52px; height: 42px; clip-path: polygon(20% 0,100% 0,80% 100%,0 100%); box-shadow: none; }
+.brand-text .t1 { color: #111b23; font: italic 900 29px var(--display); letter-spacing: -1px; }
+.brand-text .t2, .brand-team, .topbar-right, .topbar-right span { color: #26343e; }
+.topbar-right b { color: #111b23; }
+.team-change-btn { background: transparent; border-color: #6d471c; color: #172028; min-height: 40px; }
+.team-change-btn:hover { background: #172028; color: #ff921f; border-color: #172028; }
+.wrap { max-width: 1240px; padding-top: 28px; }
+.session-panel, .picker-panel, .box-panel, .championship-card { border-radius: 12px 3px 12px 3px; background: var(--panel); box-shadow: none; }
+.session-head, .picker-head, .box-head { background: #25313c; padding: 18px; }
+.session-head h2, .picker-head h2, .box-head h2 { font-family: var(--display); letter-spacing: 1px; }
+.summary .cell { background: #192027; padding: 18px; }
+.summary .value { font: 800 25px var(--display); }
+.summary .cell::before { width: 4px; background: var(--accent); }
+.trackview { background: linear-gradient(135deg, #223543, #101a22); }
+.track-line { stroke: #829fae; }
+.track-dot { fill: var(--blue); }
+.timer-block { background: #1a2026; padding-top: 24px; }
+.timer-display { font: 900 86px/1 var(--display); letter-spacing: -4px; text-shadow: none; }
+.controls button { background: var(--accent); border-color: var(--accent); color: #151c21; font-weight: 800; border-radius: 5px; clip-path: none; box-shadow: none; }
+.controls button.secondary { background: transparent; color: var(--silver); border-color: var(--line-bright); }
+.modeswitch button.active { background: #433021; color: var(--accent); }
+.championship-card { border-left: 4px solid var(--accent); }
+.championship-days .complete { border-bottom: 3px solid var(--blue); }
+@media (max-width: 800px) { .topbar { padding: 18px; } .topbar-right { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 14px; } .top-stat { display: block; } .topbar-right b { font-size: 12px; } }
+@media (max-width: 520px) { .brand-text .t1 { font-size: 24px; } .timer-display { font-size: 66px; } .team-change-btn { width: 100%; } .summary .cell:last-child { grid-column: 1 / -1; } }
+
+/* Keep narrow dashboards inside the viewport while retaining every mode. */
+.session-panel, .picker-panel, .box-panel { min-width: 0; }
+@media (max-width: 920px) { .main-grid, .lower-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+    .modeswitch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+    .modeswitch button { min-width: 0; padding: 12px 5px; white-space: normal; font-size: 9px; letter-spacing: 0.5px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; padding-inline: 0; }
+    .controls button { min-width: 0; flex: 1 1 100px; padding: 12px 8px; letter-spacing: 1px; }
 }

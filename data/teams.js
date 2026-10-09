@@ -15,7 +15,7 @@ export const TEAMS = {
         name: "MERCEDES-AMG PETRONAS",
         shortName: "MERCEDES",
         projectName: "SILVER ARROW",
-        subtitle: "STUDY CONTROL",
+        subtitle: "CONTROLE DE ESTUDOS",
 
         // Visual identity
 
@@ -41,15 +41,15 @@ export const TEAMS = {
 
         terminology: {
 
-            lap: "LAP",
-            laps: "LAPS",
+            lap: "VOLTA",
+            laps: "VOLTAS",
 
-            pit: "PIT STOP",
+            pit: "PAUSA",
 
-            engineer: "RACE ENGINEER",
-            driver: "DRIVER",
+            engineer: "ENGENHEIRO DE CORRIDA",
+            driver: "PILOTO",
 
-            session: "SESSION"
+            session: "SESSÃO"
         },
 
         // UI identity
@@ -71,7 +71,7 @@ export const TEAMS = {
         name: "SCUDERIA FERRARI",
         shortName: "FERRARI",
         projectName: "ROSSO CORSA",
-        subtitle: "STUDY CONTROL",
+        subtitle: "CONTROLE DE ESTUDOS",
 
         // Visual identity
 
@@ -97,15 +97,15 @@ export const TEAMS = {
 
         terminology: {
 
-            lap: "GIRO",
-            laps: "GIROS",
+            lap: "VOLTA",
+            laps: "VOLTAS",
 
-            pit: "BOX",
+            pit: "PAUSA",
 
-            engineer: "RACE ENGINEER",
-            driver: "PILOTA",
+            engineer: "ENGENHEIRO DE CORRIDA",
+            driver: "PILOTO",
 
-            session: "SESSION"
+            session: "SESSÃO"
         },
 
         // UI identity
@@ -127,7 +127,7 @@ export const TEAMS = {
         name: "ORACLE RED BULL RACING",
         shortName: "RED BULL",
         projectName: "BLUE BULL",
-        subtitle: "STUDY CONTROL",
+        subtitle: "CONTROLE DE ESTUDOS",
 
         // Visual identity
 
@@ -153,15 +153,15 @@ export const TEAMS = {
 
         terminology: {
 
-            lap: "LAP",
-            laps: "LAPS",
+            lap: "VOLTA",
+            laps: "VOLTAS",
 
-            pit: "BOX",
+            pit: "PAUSA",
 
-            engineer: "RACE ENGINEER",
-            driver: "DRIVER",
+            engineer: "ENGENHEIRO DE CORRIDA",
+            driver: "PILOTO",
 
-            session: "SESSION"
+            session: "SESSÃO"
         },
 
         // UI identity
@@ -183,7 +183,7 @@ export const TEAMS = {
         name: "McLAREN FORMULA 1 TEAM",
         shortName: "McLAREN",
         projectName: "PAPAYA",
-        subtitle: "STUDY CONTROL",
+        subtitle: "CONTROLE DE ESTUDOS",
 
         // Visual identity
 
@@ -209,15 +209,15 @@ export const TEAMS = {
 
         terminology: {
 
-            lap: "LAP",
-            laps: "LAPS",
+            lap: "VOLTA",
+            laps: "VOLTAS",
 
-            pit: "PIT STOP",
+            pit: "PAUSA",
 
-            engineer: "RACE ENGINEER",
-            driver: "DRIVER",
+            engineer: "ENGENHEIRO DE CORRIDA",
+            driver: "PILOTO",
 
-            session: "SESSION"
+            session: "SESSÃO"
         },
 
         // UI identity
@@ -235,10 +235,10 @@ astonmartin: {
 
     // Identity
 
-    name: "ASTON MARTIN ARMCOGNIZANT",
+    name: "ASTON MARTIN ARAMCO",
     shortName: "ASTON MARTIN",
     projectName: "AMR",
-    subtitle: "STUDY CONTROL",
+    subtitle: "CONTROLE DE ESTUDOS",
 
     // Visual identity
 
@@ -264,15 +264,15 @@ astonmartin: {
 
     terminology: {
 
-        lap: "LAP",
-        laps: "LAPS",
+        lap: "VOLTA",
+        laps: "VOLTAS",
 
-        pit: "PIT STOP",
+        pit: "PAUSA",
 
-        engineer: "RACE ENGINEER",
-        driver: "DRIVER",
+        engineer: "ENGENHEIRO DE CORRIDA",
+        driver: "PILOTO",
 
-        session: "SESSION"
+        session: "SESSÃO"
     },
 
     // UI identity
@@ -293,7 +293,7 @@ alpine: {
     name: "BWT ALPINE F1 TEAM",
     shortName: "ALPINE",
     projectName: "PINK BWT",
-    subtitle: "STUDY CONTROL",
+    subtitle: "CONTROLE DE ESTUDOS",
 
     // Visual identity
 
@@ -319,15 +319,15 @@ alpine: {
 
     terminology: {
 
-        lap: "LAP",
-        laps: "LAPS",
+        lap: "VOLTA",
+        laps: "VOLTAS",
 
-        pit: "BOX",
+        pit: "PAUSA",
 
-        engineer: "RACE ENGINEER",
-        driver: "DRIVER",
+        engineer: "ENGENHEIRO DE CORRIDA",
+        driver: "PILOTO",
 
-        session: "SESSION"
+        session: "SESSÃO"
     },
 
     // UI identity

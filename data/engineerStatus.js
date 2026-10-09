@@ -47,7 +47,7 @@ export const ENGINEER_START =
 
         ? [
             "Tudo pronto. Vamos ver o que conseguimos tirar dessa volta.",
-            "Sistemas ok. Bora fazer uma sessão boa.",
+            "Sistemas prontos. Bora fazer uma sessão boa.",
             "Pista livre. Vamos nessa."
         ]
 
@@ -62,7 +62,7 @@ export const ENGINEER_START =
     : team.id === "alpine"
 
         ? [
-            "Sistemas online. Tudo pronto para sair.",
+            "Sistemas ativos. Tudo pronto para sair.",
             "Telemetria estável. Vamos buscar uma boa volta.",
             "Tudo preparado. Foco na execução."
         ]
@@ -142,7 +142,7 @@ export const ENGINEER_DONE_FOCUS =
         ? [
             "Muito boa volta. Trabalho limpo e consistente.",
             "Sessão concluída. Dados muito bons.",
-            "Bom trabalho. Agora box e recuperação."
+            "Bom trabalho. Agora uma pausa e recuperação."
         ]
 
     : team.id === "ferrari"
@@ -150,7 +150,7 @@ export const ENGINEER_DONE_FOCUS =
         ? [
             "Que volta. Muito bom trabalho.",
             "Sessão concluída.",
-            "Excelente. Agora box, respira e recupera."
+            "Excelente. Agora uma pausa, respira e recupera."
         ]
 
     : team.id === "redbull"
@@ -158,7 +158,7 @@ export const ENGINEER_DONE_FOCUS =
         ? [
             "Boa volta. Trabalho feito.",
             "Sessão concluída.",
-            "Bom stint. Box agora e prepara o próximo."
+            "Boa sequência de voltas. Pausa agora e prepara o próximo."
         ]
 
     : team.id === "mclaren"
@@ -166,7 +166,7 @@ export const ENGINEER_DONE_FOCUS =
         ? [
             "Boa!!!.",
             "Sessão concluída. Mandou bem.",
-            "Isso foi bom. Agora box e dá uma respirada."
+            "Isso foi bom. Agora uma pausa e dá uma respirada."
         ]
 
     : team.id === "astonmartin"
@@ -174,7 +174,7 @@ export const ENGINEER_DONE_FOCUS =
         ? [
             "Muito boa sessão. Consistência do início ao fim.",
             "Trabalho limpo. Exatamente como planejado.",
-            "Excelente stint. Agora vamos recuperar."
+            "Excelente sequência de voltas. Agora vamos recuperar."
         ]
 
     : team.id === "alpine"
@@ -182,7 +182,7 @@ export const ENGINEER_DONE_FOCUS =
         ? [
             "Volta limpa. Dados registrados.",
             "Boa sessão. A telemetria mostra uma execução consistente.",
-            "Stint concluído. Podemos entrar no box."
+            "Sequência de voltas concluído. Podemos fazer uma pausa."
         ]
 
     : [
@@ -199,7 +199,7 @@ export const ENGINEER_DONE_BREAK =
     team.id === "mercedes"
 
         ? [
-            "Pit stop concluído. Recupera e voltamos quando estiver pronto.",
+            "Pausa concluído. Recupera e voltamos quando estiver pronto.",
             "Pausa feita. Quando voltar, retomamos exatamente daqui.",
             "Tudo pronto para a próxima. Sem pressa."
         ]
@@ -207,7 +207,7 @@ export const ENGINEER_DONE_BREAK =
     : team.id === "ferrari"
 
         ? [
-            "Pit stop feito. Recupera bem, depois voltamos.",
+            "Pausa feito. Recupera bem, depois voltamos.",
             "Pneus trocados. Aproveita a pausa, vamos precisar de você.",
             "Tudo pronto. Quando estiver pronto, voltamos para a pista."
         ]
@@ -215,15 +215,15 @@ export const ENGINEER_DONE_BREAK =
     : team.id === "redbull"
 
         ? [
-            "Pit stop feito. Recupera.",
-            "Tudo pronto. Quando quiser, fazemos o próximo stint.",
+            "Pausa feito. Recupera.",
+            "Tudo pronto. Quando quiser, fazemos a próxima sequência de voltas.",
             "Pausa concluída. Próxima volta quando estiver pronto."
         ]
 
     : team.id === "mclaren"
 
         ? [
-            "Pit stop feito. Vai lá, recupera um pouco.",
+            "Pausa feito. Vai lá, recupera um pouco.",
             "Tudo pronto para a próxima. Sem pressa.",
             "Pausa feita. Quando estiver pronto, voltamos."
         ]
@@ -231,19 +231,19 @@ export const ENGINEER_DONE_BREAK =
     : team.id === "astonmartin"
 
         ? [
-            "Pit stop concluído. Aproveita para recuperar.",
-            "Tudo preparado para o próximo stint. Volte quando estiver pronto.",
+            "Pausa concluído. Aproveita para recuperar.",
+            "Tudo preparado para a próxima sequência de voltas. Volte quando estiver pronto.",
             "Pausa concluída. Mantemos o plano para a próxima sessão."
         ]
 
     : team.id === "alpine"
 
         ? [
-            "Pit stop concluído. Sistemas em espera.",
+            "Pausa concluído. Sistemas em espera.",
             "Telemetria estável. Aproveita a pausa.",
             "Tudo preparado para a próxima saída."
         ]
 
     : [
-        "Pit stop concluído. Pronto para a próxima."
+        "Pausa concluído. Pronto para a próxima."
     ];

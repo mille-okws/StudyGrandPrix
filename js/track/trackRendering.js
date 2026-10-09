@@ -117,7 +117,7 @@ export function renderTrack() {
 
         if (trackRd) {
             trackRd.textContent =
-                "RD --";
+                "ETAPA --";
         }
 
         pathTotalLength = 0;
@@ -148,7 +148,7 @@ export function renderTrack() {
 
     if (trackRd) {
         trackRd.textContent =
-            `RD ${String(raceIndex + 1).padStart(2, "0")}`;
+            `ETAPA ${String(raceIndex + 1).padStart(2, "0")}`;
     }
 
 
@@ -378,6 +378,11 @@ export function renderCircuitList() {
             row.className =
                 "circuit-row";
 
+            row.tabIndex = 0;
+            row.setAttribute("role", "button");
+            row.setAttribute("aria-label", `${race.gp}, ${race.circuit}`);
+            row.setAttribute("aria-pressed", String(race.id === state.currentRaceId));
+
 
             if (
                 race.id === state.currentRaceId
@@ -471,6 +476,14 @@ export function renderCircuitList() {
                 }
             );
 
+
+            row.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    selectCircuit(race.id);
+                    document.querySelector(".circuit-row.active")?.focus();
+                }
+            });
 
             list.appendChild(row);
         }

@@ -610,7 +610,7 @@ a {
 }
 
 .trackview::before {
-  content: "LIVE TRACK DATA";
+  content: "DADOS DA PISTA AO VIVO";
 
   position: absolute;
 
@@ -1404,7 +1404,7 @@ a {
 }
 
 .driver-condition::before {
-  content: "DRIVER SYSTEM";
+  content: "CONDIÇÃO DO PILOTO";
 
   position: absolute;
 

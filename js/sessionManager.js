@@ -1,3 +1,4 @@
+import { getSelectedSubject } from "./subjects.js";
 // ============================================================
 // SILVER ARROW
 // SESSION MANAGER
@@ -65,6 +66,8 @@ export function initializeSessionManager(options = {}) {
 
         openPendingRating:
             options.openPendingRating,
+
+        submitPendingRating: options.submitPendingRating,
 
         renderSummary:
             options.renderSummary,
@@ -230,6 +233,14 @@ export function configureSession(modeKey) {
     }
 
 
+    if (state.pendingLap) context?.submitPendingRating?.({ resume: false });
+    state.awaitingNextLap = false;
+
+    // Reconfiguring a circuit or mode must stop the previous countdown.
+    pauseTimer();
+
+    state.sessionSubject = null;
+
     state.mode =
         modeKey;
 
@@ -266,25 +277,14 @@ export function configureSession(modeKey) {
     // --------------------------------------------------------
     // QUALIFYING
     //
-    // Qualy = metade da Race
+    // Classificação: três etapas de cinco minutos.
     // --------------------------------------------------------
 
     else if (
         mode.type === "qualy"
     ) {
 
-        const raceLaps =
-            getCurrentRaceLaps();
-
-
-        const qualyLaps =
-            Math.max(
-                1,
-                Math.floor(
-                    raceLaps / 2
-                )
-            );
-
+        const qualyLaps = MODES.qualy.laps;
 
         state.sessionLapLimit =
             qualyLaps;
@@ -341,6 +341,8 @@ export function configureSession(modeKey) {
 
     }
 
+
+    updateDisplay();
 
     return true;
 
@@ -431,7 +433,7 @@ export function setMode(modeKey) {
 
 
     setEngineer(
-        `Sessão trocada para ${mode.sessionName}. Aperte PUSH quando estiver pronto.`
+        `Sessão trocada para ${mode.sessionName}. Aperte INICIAR quando estiver pronto.`
     );
 
 }
@@ -517,27 +519,13 @@ export function startTimer() {
     }
 
 
-    // --------------------------------------------------------
-    // REST CHECK
-    // --------------------------------------------------------
-
-    if (
-        mode.type !== "break" &&
-        state.rest <= 0
-    ) {
-
-        setEngineer(
-            "REST DEPLETED. BOX REQUIRED. Registre seu sono e recupere energia."
-        );
-
-        return;
-
-    }
-
+    if (state.secondsLeft <= 0) configureSession(state.mode);
 
     // --------------------------------------------------------
     // START / RESUME
     // --------------------------------------------------------
+
+    state.sessionSubject ??= getSelectedSubject();
 
     state.running =
         true;
@@ -568,8 +556,8 @@ export function startTimer() {
 
         setEngineer(
             mode.type === "qualy"
-                ? `RESUMING Q${state.currentLap}. PUSH.`
-                : `RESUMING LAP ${state.currentLap}. PUSH.`
+                ? `Retomando a classificação ${state.currentLap}. Vamos lá.`
+                : `Retomando a volta ${state.currentLap}. Vamos lá.`
         );
 
     }
@@ -585,6 +573,10 @@ export function startTimer() {
     }
 
 
+    if (mode.type !== "break" && state.rest <= 0) {
+        setEngineer("Energia esgotada. Recomendamos uma pausa; você pode continuar a sessão quando desejar.");
+    }
+
     // --------------------------------------------------------
     // TIMER
     // --------------------------------------------------------
@@ -596,6 +588,8 @@ export function startTimer() {
         state.timerId
     );
 
+
+    state.lastTickAt = Date.now();
 
     state.timerId =
         setInterval(
@@ -636,11 +630,12 @@ function tick() {
     // COUNTDOWN
     // --------------------------------------------------------
 
-    state.secondsLeft =
-        Math.max(
-            0,
-            state.secondsLeft - 1
-        );
+    // Use elapsed wall time so background-tab throttling cannot extend a lap.
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - state.lastTickAt) / 1000));
+    if (!elapsedSeconds) return;
+    state.lastTickAt += elapsedSeconds * 1000;
+    const previousSeconds = state.secondsLeft;
+    state.secondsLeft = Math.max(0, previousSeconds - elapsedSeconds);
 
 
     const mode =
@@ -660,14 +655,10 @@ function tick() {
     // REST CONSUMPTION
     // --------------------------------------------------------
 
-    if (
-        mode.type !== "break" &&
-        state.secondsLeft > 0 &&
-        state.secondsLeft % 60 === 0
-    ) {
-
-        consumeRest();
-
+    const crossedMinutes = Math.max(0,
+        Math.floor((previousSeconds - 1) / 60) - Math.floor(Math.max(0, state.secondsLeft - 1) / 60));
+    if (mode.type !== "break") {
+        for (let minute = 0; minute < crossedMinutes; minute++) consumeRest();
     }
 
 
@@ -680,11 +671,11 @@ function tick() {
         state.rest <= 20 &&
         state.rest > 0 &&
         state.secondsLeft > 0 &&
-        state.secondsLeft % 60 === 0
+        crossedMinutes > 0
     ) {
 
         setEngineer(
-            "ENGINEER: REST LEVEL CRITICAL. BOX RECOMMENDED."
+            "Nível de energia crítico. Recomendamos uma pausa."
         );
 
     }
@@ -771,7 +762,7 @@ export function pauseTimer() {
     if (startButton) {
 
         startButton.textContent =
-            "[ PUSH ]";
+            "[ INICIAR ]";
 
     }
 
@@ -966,13 +957,18 @@ function finishQualyLap() {
 
 
     setEngineer(
-        `Q${state.currentLap - 1} COMPLETE. PUSH FOR Q${state.currentLap}.`
+        `Classificação ${state.currentLap - 1} concluída. Vamos para a classificação ${state.currentLap}.`
     );
 
 
     updateTrackProgress(
         0
     );
+
+    state.awaitingNextLap = true;
+    pauseTimer();
+    openPendingRating();
+    setEngineer("Volta concluída. Confirme a avaliação para iniciar a próxima volta.");
 
     updateDisplay();
 
@@ -1033,13 +1029,18 @@ function finishRaceLap() {
 
 
     setEngineer(
-        `LAP ${state.currentLap - 1} COMPLETE. PUSH FOR LAP ${state.currentLap}.`
+        `Volta ${state.currentLap - 1} concluída. Vamos para a volta ${state.currentLap}.`
     );
 
 
     updateTrackProgress(
         0
     );
+
+    state.awaitingNextLap = true;
+    pauseTimer();
+    openPendingRating();
+    setEngineer("Volta concluída. Confirme a avaliação para iniciar a próxima volta.");
 
     updateDisplay();
 
@@ -1139,7 +1140,7 @@ export function finishSession() {
     ) {
 
         setEngineer(
-            "CHEQUERED FLAG. QUALIFYING COMPLETE."
+            "Bandeira quadriculada. Classificação concluída."
         );
 
 
@@ -1163,7 +1164,7 @@ export function finishSession() {
     ) {
 
         setEngineer(
-            "CHEQUERED FLAG. RACE COMPLETE. P1: STUDY SESSION."
+            "Bandeira quadriculada. Corrida concluída. Primeiro lugar nos estudos!"
         );
 
 
@@ -1252,7 +1253,7 @@ function finishBreak() {
 
 
     setEngineer(
-        `BOX COMPLETE. REST RECOVERED +${recovery}%.`
+        `Pausa concluída. Energia recuperada: +${recovery}%.`
     );
 
 

@@ -5,39 +5,39 @@
 export const MODES = {
 
   practice: {
-    label: "FREE PRACTICE 25",
+    label: "TREINO LIVRE 25",
     type: "practice",
     minutes: 25,
-    sessionName: "FREE PRACTICE"
+    sessionName: "TREINO LIVRE"
   },
 
   qualy: {
-    label: "QUALIFYING",
+    label: "CLASSIFICAÇÃO",
     type: "qualy",
     minutesPerLap: 5,
     laps: 3,
-    sessionName: "QUALIFYING"
+    sessionName: "CLASSIFICAÇÃO"
   },
 
   race: {
-    label: "RACE",
+    label: "CORRIDA",
     type: "race",
     minutesPerLap: 5,
-    sessionName: "RACE"
+    sessionName: "CORRIDA"
   },
 
   short: {
-    label: "PIT STOP 5",
+    label: "PAUSA CURTA 5",
     type: "break",
     minutes: 5,
-    sessionName: "PIT STOP"
+    sessionName: "PAUSA CURTA"
   },
 
   long: {
-    label: "BOX LONGO 15",
+    label: "PAUSA LONGA 15",
     type: "break",
     minutes: 15,
-    sessionName: "BOX LONGO"
+    sessionName: "PAUSA LONGA"
   }
 
 };

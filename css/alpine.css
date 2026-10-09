@@ -480,3 +480,46 @@ body {
 footer {
     color: var(--silver-dim);
 }
+/* Alpine: French blue leads; BWT pink marks the second performance channel. */
+:root { --background: #0b152a; --black: #091123; --black-2: #111d35; --panel: #14243e; --panel2: #1e3455; --panel3: #2a4569; --line: #355275; --line-bright: #5c80a5; --white: #f0f5ff; --silver: #d2e2f3; --silver-dim: #a1b9d3; --silver-dark: #6f90b4; --accent: #65b9ff; --accent-bright: #a0d7ff; --accent-dim: #163f67; --accent-rgb: 101, 185, 255; --blue: #ff95c5; --blue-bright: #ffbddc; --blue-dim: #532b50; --blue-rgb: 255, 149, 197; --display: Arial, sans-serif; }
+body { background: radial-gradient(ellipse at top right, #293d72, transparent 60%), #0b152a; }
+.topbar { background: linear-gradient(105deg, #17468e, #173269 70%); border-top: 4px solid #ff95c5; border-bottom: 1px solid #6288bf; padding: 22px max(22px, calc((100vw - 1240px) / 2)); min-height: 104px; gap: 24px; flex-wrap: wrap; }
+.topbar::before, .topbar::after { display: none; }
+.brand-mark { background: #ff95c5; color: #14243e; width: 46px; height: 46px; box-shadow: none; clip-path: polygon(50% 0,100% 100%,0 100%); padding-top: 12px; }
+.brand-text .t1 { color: #f0f5ff; font: 700 24px var(--display); letter-spacing: 3px; }
+.brand-text .t2 { color: #c8dff6; }
+.brand-team { color: #ffbddc; }
+.topbar-right b { color: #f0f5ff; }
+.topbar-right { color: #c8dff6; }
+.team-change-btn { color: #f0f5ff; border-color: #729acd; min-height: 40px; }
+.team-change-btn:hover { color: #ffbddc; border-color: #ff95c5; }
+.wrap { max-width: 1240px; padding-top: 28px; }
+.session-panel, .picker-panel, .box-panel, .championship-card { border-radius: 8px; background: var(--panel); box-shadow: none; }
+.session-head, .picker-head, .box-head { background: #203959; padding: 18px; }
+.session-head h2, .picker-head h2, .box-head h2 { font-family: var(--display); letter-spacing: 1px; }
+.summary .cell { background: #14243e; padding: 18px; }
+.summary .value { font: 600 25px var(--display); }
+.summary .cell::after { background: linear-gradient(90deg, #65b9ff, #ff95c5); }
+.trackview { background: repeating-linear-gradient(90deg, transparent 0 29px, #8fbcff0a 29px 30px), #0d1d36; }
+.track-line { stroke: #6b9ac8; }
+.track-progress { stroke: #ff95c5; }
+.track-dot { fill: #ffbddc; }
+.timer-block { background: #14243e; padding-top: 24px; }
+.timer-display { font: 600 86px/1 var(--display); letter-spacing: -3px; text-shadow: none; }
+.controls button { background: #ff95c5; color: #17203b; border-color: #ff95c5; border-radius: 5px; font-weight: 700; box-shadow: none; }
+.controls button.secondary { background: transparent; color: var(--silver); border-color: var(--line-bright); }
+.modeswitch button.active { background: #273657; color: #ffbddc; }
+.championship-card { border-top: 3px solid #65b9ff; }
+.weekly-award { border-top-color: #ff95c5; }
+@media (max-width: 800px) { .topbar { padding: 18px; } .topbar-right { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 14px; } .top-stat { display: block; } .topbar-right b { font-size: 12px; } }
+@media (max-width: 520px) { .brand-text .t1 { font-size: 21px; } .timer-display { font-size: 66px; } .team-change-btn { width: 100%; } .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .summary .cell:last-child { grid-column: 1 / -1; } }
+
+/* Keep narrow dashboards inside the viewport while retaining every mode. */
+.session-panel, .picker-panel, .box-panel { min-width: 0; }
+@media (max-width: 920px) { .main-grid, .lower-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+    .modeswitch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+    .modeswitch button { min-width: 0; padding: 12px 5px; white-space: normal; font-size: 9px; letter-spacing: 0.5px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; padding-inline: 0; }
+    .controls button { min-width: 0; flex: 1 1 100px; padding: 12px 8px; letter-spacing: 1px; }
+}

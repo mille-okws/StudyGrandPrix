@@ -843,7 +843,7 @@ body {
 .trackview::before {
 
     content:
-        "SCUDERIA // LIVE TRACK DATA";
+        "SCUDERIA // DADOS DA PISTA AO VIVO";
 
     position: absolute;
 
@@ -1734,4 +1734,46 @@ footer strong {
         min-width:
             100px;
     }
+}
+/* Rosso Corsa: a red pit wall, yellow instruments and Italian racing stripes. */
+:root { --background: #130b0b; --black: #100808; --black-2: #1b0e0f; --panel: #211315; --panel2: #301c1e; --panel3: #402327; --line: #543237; --line-bright: #805058; --white: #fff5ed; --silver: #e9d5d3; --silver-dim: #c2a5a4; --silver-dark: #94716f; --accent: #ff5145; --accent-bright: #ff7768; --accent-dark: #ad1720; --accent-dim: #5b2021; --accent-rgb: 255, 81, 69; --amber: #ffda65; --yellow: #ffda65; --display: Arial, sans-serif; }
+body { background: radial-gradient(ellipse at top left, #4b1820, transparent 65%), #130b0b; }
+.topbar { background: #b81323; border-bottom: 4px solid #ffda65; padding: 22px max(22px, calc((100vw - 1240px) / 2)); min-height: 104px; gap: 24px; flex-wrap: wrap; }
+.topbar::before { background: linear-gradient(90deg, #16935e 0 33.33%, #fff5ed 33.33% 66.66%, #dc1625 66.66%); width: 120px; height: 4px; }
+.topbar::after { display: none; }
+.brand-mark { background: #ffda65; color: #301015; box-shadow: none; width: 44px; height: 52px; clip-path: polygon(0 0,100% 0,100% 70%,50% 100%,0 70%); }
+.brand-text .t1 { color: #fff5ed; font: italic 800 26px var(--display); letter-spacing: 1px; }
+.brand-text .t2, .brand-team, .topbar-right, .topbar-right span { color: #ffe3de; }
+.topbar-right b { color: #ffda65; }
+.team-change-btn { background: #991020; border-color: #ef7b80; color: #fff5ed; min-height: 40px; }
+.team-change-btn:hover { color: #ffda65; border-color: #ffda65; }
+.wrap { max-width: 1240px; padding-top: 28px; }
+.session-panel, .picker-panel, .box-panel, .championship-card { border-radius: 3px; background: var(--panel); box-shadow: none; }
+.session-head, .picker-head, .box-head { background: #3c1720; padding: 18px; border-bottom: 1px solid #74313a; }
+.session-head h2, .picker-head h2, .box-head h2 { font-family: var(--display); letter-spacing: 1px; }
+.summary .cell { background: #1d1013; padding: 18px; }
+.summary .value { font: italic 700 25px var(--display); }
+.summary .cell::before { background: #dc2432; }
+.trackview { background: radial-gradient(ellipse, #3e1b21, #170c0f 75%); }
+.track-line { stroke: #b88783; }
+.track-dot { fill: #ffda65; }
+.timer-block { background: #211315; padding-top: 24px; }
+.timer-display { font: italic 700 86px/1 var(--display); letter-spacing: -3px; color: #fff5ed; text-shadow: none; }
+.session-type { color: #ffda65; }
+.controls button { background: #ffda65; border-color: #ffda65; color: #301015; border-radius: 3px; clip-path: none; box-shadow: none; font-weight: 700; }
+.controls button.secondary { background: transparent; color: var(--silver); border-color: var(--line-bright); }
+.modeswitch button.active { color: #ffda65; background: #4c1920; }
+.championship-card { border-top: 3px solid #dc2432; }
+.championship-standing strong { font-style: italic; }
+@media (max-width: 800px) { .topbar { padding: 18px; } .topbar-right { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 14px; } .top-stat { display: block; } .topbar-right b { font-size: 12px; } }
+@media (max-width: 520px) { .brand-text .t1 { font-size: 21px; } .timer-display { font-size: 66px; } .team-change-btn { width: 100%; } .summary .cell:last-child { grid-column: 1 / -1; } }
+
+/* Keep narrow dashboards inside the viewport while retaining every mode. */
+.session-panel, .picker-panel, .box-panel { min-width: 0; }
+@media (max-width: 920px) { .main-grid, .lower-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+    .modeswitch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+    .modeswitch button { min-width: 0; padding: 12px 5px; white-space: normal; font-size: 9px; letter-spacing: 0.5px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; padding-inline: 0; }
+    .controls button { min-width: 0; flex: 1 1 100px; padding: 12px 8px; letter-spacing: 1px; }
 }

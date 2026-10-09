@@ -288,6 +288,14 @@ function updateDocumentTitle(team) {
  * @param {object} team
  */
 function updateBrand(team) {
+    const mark = document.querySelector(".brand-mark");
+    const carTitle = document.getElementById("carTeamName");
+    const footer = document.getElementById("projectFooter");
+
+    if (mark) mark.textContent = team.id === "astonmartin" ? "AM" : team.projectName.charAt(0);
+    if (carTitle) carTitle.textContent = team.shortName;
+    if (footer) footer.textContent = `${team.projectName} · ESTUDE. ANALISE. AVANCE.`;
+
     const title =
         document.querySelector(
             ".brand-text .t1"

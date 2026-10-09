@@ -396,3 +396,44 @@ body {
 /* =========================================================
    FOOTER — MERCEDES
 ========================================================= */
+/* Silver Arrow: brushed silver instruments and Petronas precision. */
+:root { --background: #080d10; --black: #080d10; --black-2: #0b1418; --panel: #101a1f; --panel2: #19272d; --panel3: #22343b; --line: #30434c; --line-bright: #526a75; --white: #edf4f5; --silver: #cad8dd; --silver-dim: #a0b4be; --silver-dark: #718b97; --accent: #00e0c4; --accent-bright: #67f4e2; --accent-dim: #074d48; --accent-rgb: 0, 224, 196; --display: Arial, sans-serif; }
+body { background: linear-gradient(125deg, #15252d, #080d10 65%); }
+.topbar { background: linear-gradient(110deg, #e8eff0, #a6b9c1); border-top: 4px solid var(--accent); padding: 20px max(22px, calc((100vw - 1240px) / 2)); min-height: 100px; gap: 24px; flex-wrap: wrap; }
+.topbar::before, .topbar::after { display: none; }
+.brand-mark { background: #10252c; color: var(--accent); box-shadow: none; clip-path: none; border-radius: 2px; width: 46px; height: 46px; }
+.brand-text .t1 { color: #102029; font: 700 23px var(--display); letter-spacing: 3px; }
+.brand-text .t2, .brand-team { color: #314953; }
+.topbar-right { color: #314953; }
+.topbar-right b { color: #102029; font-size: 14px; }
+.top-stat::before { background: #008f80; }
+.team-change-btn { color: #102029; border-color: #607b86; min-height: 40px; }
+.team-change-btn:hover { background: #10252c; color: var(--accent); }
+.wrap { max-width: 1240px; padding-top: 28px; }
+.session-panel, .picker-panel, .box-panel, .championship-card { border-radius: 2px; background: var(--panel); box-shadow: none; }
+.session-head, .picker-head, .box-head { background: #1b2c34; padding: 18px; }
+.session-head h2, .picker-head h2, .box-head h2 { font-family: var(--display); letter-spacing: 1px; }
+.summary .cell { background: #101a1f; padding: 18px; }
+.summary .value { font: 600 25px var(--display); }
+.summary .label { color: var(--silver-dim); }
+.trackview { background: repeating-linear-gradient(0deg, transparent 0 29px, #9db8c309 29px 30px), repeating-linear-gradient(90deg, transparent 0 29px, #9db8c309 29px 30px), #0b171d; }
+.track-line { stroke: #779ca9; }
+.timer-block { background: #101a1f; padding-top: 24px; }
+.timer-display { font: 300 86px/1 var(--display); letter-spacing: -3px; text-shadow: none; }
+.controls button { background: var(--accent); color: #061a18; border-radius: 2px; font-weight: 700; box-shadow: none; }
+.controls button.secondary { background: transparent; color: var(--silver); border-color: var(--line-bright); }
+.modeswitch button.active { background: #17352f; color: var(--accent); }
+.championship-card { border-top: 2px solid var(--accent); }
+.championship-standing strong { font-weight: 300; }
+@media (max-width: 800px) { .topbar { padding: 18px; } .topbar-right { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 14px; } .top-stat { display: block; } .topbar-right b { font-size: 12px; } }
+@media (max-width: 520px) { .brand-text .t1 { font-size: 19px; } .timer-display { font-size: 66px; } .team-change-btn { width: 100%; } .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .summary .cell:last-child { grid-column: 1 / -1; } }
+
+/* Keep narrow dashboards inside the viewport while retaining every mode. */
+.session-panel, .picker-panel, .box-panel { min-width: 0; }
+@media (max-width: 920px) { .main-grid, .lower-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+    .modeswitch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
+    .modeswitch button { min-width: 0; padding: 12px 5px; white-space: normal; font-size: 9px; letter-spacing: 0.5px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; padding-inline: 0; }
+    .controls button { min-width: 0; flex: 1 1 100px; padding: 12px 8px; letter-spacing: 1px; }
+}
