@@ -10,14 +10,16 @@ import { getCurrentTeam } from "../js/teamManager.js";
 // CURRENT TEAM
 // ============================================================
 
-const team = getCurrentTeam();
+
 
 
 // ============================================================
 // ENGINEER START
 // ============================================================
 
-export const ENGINEER_START =
+export function getEngineerStart() {
+    const team = getCurrentTeam();
+    return (
 
     team.id === "mercedes"
 
@@ -69,14 +71,17 @@ export const ENGINEER_START =
 
     : [
         "Tudo pronto. Podemos começar."
-    ];
+    ]);
+}
 
 
 // ============================================================
 // ENGINEER TICK
 // ============================================================
 
-export const ENGINEER_TICK =
+export function getEngineerTick() {
+    const team = getCurrentTeam();
+    return (
 
     team.id === "mercedes"
 
@@ -128,14 +133,17 @@ export const ENGINEER_TICK =
 
     : [
         "Mantém o ritmo."
-    ];
+    ]);
+}
 
 
 // ============================================================
 // ENGINEER DONE — FOCUS
 // ============================================================
 
-export const ENGINEER_DONE_FOCUS =
+export function getEngineerDoneFocus() {
+    const team = getCurrentTeam();
+    return (
 
     team.id === "mercedes"
 
@@ -187,14 +195,17 @@ export const ENGINEER_DONE_FOCUS =
 
     : [
         "Sessão concluída. Bom trabalho."
-    ];
+    ]);
+}
 
 
 // ============================================================
 // ENGINEER DONE — BREAK
 // ============================================================
 
-export const ENGINEER_DONE_BREAK =
+export function getEngineerDoneBreak() {
+    const team = getCurrentTeam();
+    return (
 
     team.id === "mercedes"
 
@@ -246,4 +257,5 @@ export const ENGINEER_DONE_BREAK =
 
     : [
         "Pausa concluído. Pronto para a próxima."
-    ];
+    ]);
+}

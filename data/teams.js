@@ -242,16 +242,16 @@ astonmartin: {
 
     // Visual identity
 
-    accent: "#006f62",
-    accentBright: "#00a88f",
-    accentDim: "#073d37",
+    accent: "#d4ec70",
+    accentBright: "#e4fa94",
+    accentDim: "#35492a",
 
-    background: "#050908",
-    panel: "#0a100f",
-    panel2: "#101817",
+    background: "#08231e",
+    panel: "#12372e",
+    panel2: "#1c4639",
 
     silver: "#d8dedc",
-    silverDim: "#74817e",
+    silverDim: "#b0c5b7",
 
     // Assets
 

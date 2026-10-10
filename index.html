@@ -15,6 +15,8 @@
       rel="stylesheet"
   >
 
+  <link rel="stylesheet" href="./css/layout.css">
+
   <title>PROJETO SILVER ARROW</title>
 </head>
 
@@ -28,6 +30,9 @@
 <div
   class="team-select-overlay"
   id="teamSelectOverlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="teamSelectTitle"
 >
 
   <div class="team-select-panel">
@@ -39,7 +44,7 @@
           SILVER ARROW // INICIALIZAÇÃO
         </span>
 
-        <h1>
+        <h1 id="teamSelectTitle">
           ESCOLHA SUA EQUIPE
         </h1>
 
@@ -190,38 +195,8 @@
 
 <div class="wrap">
 
-
-  <!-- =======================================================
-       MAIN GRID
-  ======================================================== -->
-
-  <section class="championship-grid" aria-label="Campeonato e premiação semanal">
-    <section id="championshipCard" class="championship-card">
-      <div class="championship-heading"><span class="eyebrow">CAMPEONATO DE ESTUDOS</span><span id="championshipPeriod"></span></div>
-      <div class="championship-standing"><strong id="championshipPosition">P22</strong><span id="championshipMovement" aria-live="polite">— Primeira semana</span></div>
-      <p id="championshipProgress"></p>
-      <div id="championshipDays" class="championship-days" aria-label="Dias de estudo na semana"></div>
-      <p id="championshipComparison" class="championship-note"></p>
-      <details class="championship-rules"><summary>Como funciona a classificação?</summary><p>Semana de segunda a domingo. Estudar 25 minutos em cinco dias rende P1; nenhum estudo rende P22. Cada dia vale até 25 minutos para a posição: concentrar tudo em um dia não substitui a consistência. Durante a semana, a meta provisória cresce de um a cinco dias. Pausas não contam. A classificação é pessoal, em uma escala de 22 posições.</p></details>
-      <p id="championshipStorage" role="status" class="championship-note"></p>
-    </section>
-    <section id="weeklyAward" class="championship-card weekly-award">
-      <span class="eyebrow">PREMIAÇÃO SEMANAL</span>
-      <div class="award-result"><svg id="awardIcon" viewBox="0 0 48 48" width="48" height="48" aria-label="Troféu" role="img" hidden><path d="M14 6h20v12c0 9-5 13-10 13s-10-4-10-13V6Zm0 4H6v6c0 7 4 10 10 10m18-16h8v6c0 7-4 10-10 10M24 31v9m-8 2h16" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg><strong id="awardPosition">—</strong></div>
-      <h2 id="awardTitle">Sua primeira premiação está chegando</h2>
-      <p id="awardDescription"></p>
-      <p class="championship-note">O resultado da semana encerrada fica salvo neste navegador. Ouro para P1, prata para P2 e bronze para P3.</p>
-    </section>
-  </section>
-
-  <main class="main-grid">
-
-
-    <!-- =====================================================
-         SESSION PANEL
-    ====================================================== -->
-
-    <section class="session-panel">
+  <main class="dashboard" aria-label="Painel de estudos">
+<section class="session-panel" aria-label="Pista e cronômetro de estudo">
 
 
       <div class="session-head">
@@ -242,6 +217,7 @@
           -
         </span>
 
+        <a class="circuit-shortcut" href="#circuitPicker">Escolher circuito ↓</a>
       </div>
 
 
@@ -250,6 +226,7 @@
            TRACK
       ==================================================== -->
 
+      <div class="session-stage">
       <div class="trackview">
 
         <span
@@ -299,6 +276,8 @@
         <div
           class="timer-display"
           id="timerDisplay"
+          role="timer"
+          aria-label="Tempo restante da sessão"
         >
           25:00
         </div>
@@ -335,6 +314,8 @@
       </div>
 
 
+
+      </div>
 
       <!-- ===================================================
            SESSION MODES
@@ -486,6 +467,7 @@
             max="10"
             value="7"
             id="focusRange"
+            aria-label="Nível de foco, de 1 a 10"
           >
 
         </div>
@@ -512,6 +494,7 @@
             max="100"
             value="80"
             id="completionRange"
+            aria-label="Porcentagem de tarefas concluídas"
           >
 
         </div>
@@ -538,6 +521,7 @@
             max="100"
             value="10"
             id="errorsRange"
+            aria-label="Porcentagem de erros e distrações"
           >
 
         </div>
@@ -556,13 +540,7 @@
 
     </section>
 
-
-
-    <!-- =====================================================
-         CIRCUIT PICKER
-    ====================================================== -->
-
-    <section class="picker-panel">
+<section class="picker-panel" id="circuitPicker" aria-label="Seleção de circuito">
 
       <div class="picker-head">
 
@@ -592,23 +570,87 @@
 
     </section>
 
+<section id="championshipCard" class="championship-card">
+      <div class="championship-heading"><span class="eyebrow">CAMPEONATO DE ESTUDOS</span><span id="championshipPeriod"></span></div>
+      <div class="championship-standing"><strong id="championshipPosition">P22</strong><span id="championshipMovement" aria-live="polite">— Primeira semana</span></div>
+      <p id="championshipProgress"></p>
+      <div id="championshipDays" class="championship-days" aria-label="Dias de estudo na semana"></div>
+      <p id="championshipComparison" class="championship-note"></p>
+      <details class="championship-rules"><summary>Como funciona a classificação?</summary><p>Semana de segunda a domingo. Estudar 25 minutos em cinco dias rende P1; nenhum estudo rende P22. Cada dia vale até 25 minutos para a posição: concentrar tudo em um dia não substitui a consistência. Durante a semana, a meta provisória cresce de um a cinco dias. Pausas não contam. A classificação é pessoal, em uma escala de 22 posições.</p></details>
+      <p id="championshipStorage" role="status" class="championship-note"></p>
+    </section>
 
-  </main>
+<section id="weeklyAward" class="championship-card weekly-award">
+      <span class="eyebrow">PREMIAÇÃO SEMANAL</span>
+      <div class="award-result"><svg id="awardIcon" viewBox="0 0 48 48" width="48" height="48" aria-label="Troféu" role="img" hidden><path d="M14 6h20v12c0 9-5 13-10 13s-10-4-10-13V6Zm0 4H6v6c0 7 4 10 10 10m18-16h8v6c0 7-4 10-10 10M24 31v9m-8 2h16" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg><strong id="awardPosition">—</strong></div>
+      <h2 id="awardTitle">Sua primeira premiação está chegando</h2>
+      <p id="awardDescription"></p>
+      <p class="championship-note">O resultado da semana encerrada fica salvo neste navegador. Ouro para P1, prata para P2 e bronze para P3.</p>
+    </section>
+
+<section class="box-panel telemetry-panel">
+
+      <div class="box-head">
+
+        <h2>
+          TELEMETRIA DE ESTUDO
+        </h2>
+
+        <span id="telemetrySessionCount">
+          0 voltas
+        </span>
+
+      </div>
 
 
-
-  <!-- =======================================================
-       LOWER GRID
-  ======================================================== -->
-
-  <section class="lower-grid">
+      <div
+        class="telemetry-grid"
+        id="telemetryGrid"
+      ></div>
 
 
-    <!-- =====================================================
-         CAR STATUS
-    ====================================================== -->
+      <div class="telemetry-note">
 
-    <section class="box-panel">
+        RITMO compara o foco médio de hoje
+        com sua média histórica.
+
+        CONSISTÊNCIA mede a regularidade
+        das suas voltas nos últimos 7 dias.
+
+      </div>
+
+    </section>
+
+<section class="box-panel focus-panel">
+
+      <div class="box-head">
+
+        <h2>
+          FOCO · 7 DIAS
+        </h2>
+
+        <span>
+          histórico
+        </span>
+
+      </div>
+
+
+      <div class="box-body">
+
+        <svg
+          class="chart-svg"
+          id="focusChart"
+          viewBox="0 0 280 140"
+          role="img"
+          aria-label="Histórico de foco dos últimos sete dias"
+        ></svg>
+
+      </div>
+
+    </section>
+
+<section class="box-panel condition-panel">
 
       <div class="box-head">
 
@@ -725,89 +767,7 @@
       </div>
 
     </section>
-
-
-
-    <!-- =====================================================
-         TELEMETRIA DE ESTUDO
-    ====================================================== -->
-
-    <section class="box-panel">
-
-      <div class="box-head">
-
-        <h2>
-          TELEMETRIA DE ESTUDO
-        </h2>
-
-        <span id="telemetrySessionCount">
-          0 voltas
-        </span>
-
-      </div>
-
-
-      <div
-        class="telemetry-grid"
-        id="telemetryGrid"
-      ></div>
-
-
-      <div class="telemetry-note">
-
-        RITMO compara o foco médio de hoje
-        com sua média histórica.
-
-        CONSISTÊNCIA mede a regularidade
-        das suas voltas nos últimos 7 dias.
-
-      </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         FOCUS CHART
-    ====================================================== -->
-
-    <section class="box-panel">
-
-      <div class="box-head">
-
-        <h2>
-          FOCO · 7 DIAS
-        </h2>
-
-        <span>
-          histórico
-        </span>
-
-      </div>
-
-
-      <div class="box-body">
-
-        <svg
-          class="chart-svg"
-          id="focusChart"
-          viewBox="0 0 280 140"
-          role="img"
-          aria-label="Histórico de foco dos últimos sete dias"
-        ></svg>
-
-      </div>
-
-    </section>
-
-
-  </section>
-
-
-
-  <!-- =======================================================
-       FOOTER
-  ======================================================== -->
+  </main>
 
   <footer>
 

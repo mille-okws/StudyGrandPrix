@@ -7,9 +7,9 @@ import { getSelectedSubject } from "./subjects.js";
 import { MODES } from "../data/modes.js";
 
 import {
-    ENGINEER_START,
-    ENGINEER_TICK,
-    ENGINEER_DONE_FOCUS
+    getEngineerStart,
+    getEngineerTick,
+    getEngineerDoneFocus
 } from "../data/engineerStatus.js";
 
 
@@ -566,7 +566,7 @@ export function startTimer() {
 
         setEngineer(
             pick(
-                ENGINEER_START
+                getEngineerStart()
             )
         );
 
@@ -706,7 +706,7 @@ function tick() {
 
         setEngineer(
             pick(
-                ENGINEER_TICK
+                getEngineerTick()
             )
         );
 
@@ -1192,7 +1192,7 @@ function finishPractice() {
 
     setEngineer(
         pick(
-            ENGINEER_DONE_FOCUS
+            getEngineerDoneFocus()
         )
     );
 

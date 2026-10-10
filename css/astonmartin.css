@@ -220,3 +220,9 @@ body { background: radial-gradient(ellipse at top left, #235642, transparent 65%
 .championship-card { background: #12372e; border-top: 1px solid #92af96; }
 .championship-standing strong { font-family: Georgia, serif; font-weight: 400; }
 .weekly-award { background: linear-gradient(135deg, #1e4735, #12372e); }
+
+/* Keep status and selection legible against British racing green. */
+.driver-condition::before { content: "RECUPERAÇÃO"; }
+.team-select-card[data-team="astonmartin"] { --team-accent: #d4ec70; }
+.team-select-card[data-team="astonmartin"] .team-select-card__status { font-weight: 700; }
+:where(button, select, input, summary, a):focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 4px; }

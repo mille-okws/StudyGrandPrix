@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
         await page.clock.install();
-        await page.goto('http://127.0.0.1:8000/', { waitUntil: 'networkidle' });
+        await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/', { waitUntil: 'networkidle' });
         assert.equal(await page.locator('html').getAttribute('lang'), 'pt-BR');
         assert.equal((await page.locator('.team-select-header h1').innerText()).trim(), 'ESCOLHA SUA EQUIPE');
         // Theme identities remain as named, while the surrounding UI is translated.

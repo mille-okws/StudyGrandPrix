@@ -9,7 +9,7 @@ const AWARDS = 'studyGrandPrixChampionship';
   const errors=[];const failed=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)failed.push(r.url())});
   await page.clock.install({time:new Date('2026-10-09T12:00:00-03:00')});
-  await page.goto('http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+  await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});
   await page.locator('.team-select-card[data-team="astonmartin"]').click();
   const rules=await page.evaluate(async()=>{
    const {weeklyResult,weekStart}=await import('/js/championship.js');

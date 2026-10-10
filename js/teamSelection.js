@@ -74,6 +74,21 @@ export function initializeTeamSelection(options = {}) {
         );
     }
 
+    overlay.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeTeamSelection();
+        }
+        if (event.key !== "Tab") return;
+        const controls = [...overlay.querySelectorAll('button:not(:disabled), [href], input, select, [tabindex="0"]')];
+        const first = controls[0], last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault(); last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault(); first?.focus();
+        }
+    });
+
     // --------------------------------------------------------
     // FIRST BOOT
     // --------------------------------------------------------
@@ -279,6 +294,9 @@ export function openTeamSelection() {
     }
 
     overlay.classList.add("is-open");
+    const closeButton = document.getElementById("closeTeamSelectBtn");
+    if (closeButton) closeButton.disabled = !hasSelectedTeam();
+    overlay.querySelector(".team-select-card.selected")?.focus();
 
     document.body.classList.add(
         "team-selection-open"
@@ -319,6 +337,7 @@ export function closeTeamSelection() {
     document.body.classList.remove(
         "team-selection-open"
     );
+    document.getElementById("changeTeamBtn")?.focus();
 }
 
 

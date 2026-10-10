@@ -581,6 +581,9 @@ function getRestStatus(rest) {
 
 
 function updateRestDisplay() {
+    const condition = document.querySelector(".driver-condition");
+    condition?.classList.toggle("warning", state.rest >= 20 && state.rest < 60);
+    condition?.classList.toggle("danger", state.rest < 20);
 
     const value =
         document.getElementById(

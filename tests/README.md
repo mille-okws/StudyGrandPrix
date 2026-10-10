@@ -45,3 +45,21 @@ Ele verifica os cinco temas revisados em 320, 390, 768 e 1440 pixels, além de
 cronômetro, matérias, circuitos e cards do campeonato. A Red Bull participa das
 verificações funcionais, mas mantém o estouro de largura preexistente em telas
 estreitas: esse tema foi preservado conforme solicitado.
+
+O teste de layout cobre monitores ultrawide (3440×1440), QHD (2560×1440),
+Full HD (1920×1080), notebooks (1366×768), tablets e celulares, nos seis temas:
+
+```sh
+BASE_URL=http://127.0.0.1:8002/ NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/layout.cjs
+```
+
+Todos os testes aceitam `BASE_URL` para usar outra porta local. O layout compartilhado
+agora mantém também a Red Bull dentro da tela, preservando sua identidade visual.
+
+O teste específico da Aston Martin compara o registro de sessões com as outras
+cinco equipes, verifica as mensagens da equipe após trocas, os alertas de energia,
+a seleção pelo teclado e formulários expandidos em oito larguras de tela:
+
+```sh
+BASE_URL=http://127.0.0.1:8002/ NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/astonmartin.cjs
+```

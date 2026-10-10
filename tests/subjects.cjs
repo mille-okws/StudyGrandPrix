@@ -5,7 +5,7 @@ const {chromium}=require('playwright');
  try {
  const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
  await p.clock.install();
- await p.goto('http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+ await p.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});
  await p.locator('.team-select-card[data-team="astonmartin"]').click();
  assert.ok(!(await p.locator('#subjectSelect').innerText()).includes('engenharia'));
  await p.locator('.subject-manager summary').click();
@@ -44,7 +44,7 @@ const {chromium}=require('playwright');
  assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  assert.deepEqual(errors,[]);
  const old=await b.newPage();await old.addInitScript(()=>{localStorage.setItem('silverArrowTeam','mercedes');localStorage.setItem('silverArrowPomodoro2026',JSON.stringify({laps:1,totalSeconds:1500,sessions:[{subject:'estruturas',isEng:true,completion:80,focus:8,errors:0,dateKey:'2026-10-09'}]}));});
- await old.goto('http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+ await old.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});
  assert.equal(await old.locator('#subjectSelect option[value="estruturas"]').innerText(),'Estruturas / Resistência dos Materiais');
  assert.equal(await old.evaluate(()=>JSON.parse(localStorage.getItem('silverArrowPomodoro2026')).sessions.length),1);
  console.log('PASS: custom subjects add/rename/delete, duplicates, persistence, stable IDs, active-session attribution, completion for all subjects, preserved history, safe text rendering, last-item guard, mobile layout and legacy migration.');
