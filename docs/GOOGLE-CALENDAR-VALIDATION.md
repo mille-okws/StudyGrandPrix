@@ -6,6 +6,46 @@ O padrão da aplicação usa `https://www.googleapis.com/auth/calendar.app.creat
 
 O Client ID é público e deve ser definido na configuração de deploy como `window.STUDY_GRAND_PRIX_CONFIG.googleClientId`. Client secrets não pertencem ao frontend. O token GIS permanece em memória e é descartado ao expirar ou desconectar. Em produção, o domínio publicado e o endereço de desenvolvimento precisam estar cadastrados em **Authorized JavaScript origins** no cliente OAuth.
 
+## Configuração do Client ID
+
+`config.js` é carregado antes do módulo `index.js` e garante que a configuração
+global exista mesmo quando a integração está desativada. Para desenvolvimento
+local, copie `config.local.example.js` para `config.local.js`, substitua o
+placeholder pelo Client ID público e adicione, em `index.html`, a linha abaixo
+antes de `config.js`:
+
+```html
+<script src="./config.local.js"></script>
+```
+
+Remova essa linha antes de publicar uma versão que injeta a configuração pelo
+deploy. O arquivo local é ignorado pelo Git; nunca adicione client secrets ou
+tokens a ele.
+
+Em produção, o processo de deploy deve disponibilizar o Client ID público em
+`window.STUDY_GRAND_PRIX_CONFIG.googleClientId` antes do carregamento de
+`index.js` — por exemplo, substituindo `config.js` por uma cópia específica do
+ambiente. O usuário final não precisa criar um projeto Google Cloud nem
+preencher o campo técnico da tela.
+
+## Configuração no Google Cloud
+
+1. Crie ou selecione o projeto `Study Grand Prix` no Google Cloud Console.
+2. Ative a **Google Calendar API**.
+3. Configure o Google Auth Platform e a tela de consentimento OAuth.
+4. Escolha o público adequado. Em modo externo, adicione as contas de teste
+   autorizadas enquanto o aplicativo estiver em teste.
+5. Crie uma credencial **OAuth Client ID → Web application**.
+6. Em **Authorized JavaScript origins**, adicione exatamente:
+   `http://localhost:8000`, `http://127.0.0.1:8000` e a origem HTTPS publicada.
+   Não inclua caminhos, barras finais ou uma porta diferente da usada pelo
+   servidor.
+7. Garanta que o consentimento inclua o escopo
+   `https://www.googleapis.com/auth/calendar.app.created`.
+8. Injete apenas o Client ID público no `config.js` ou na configuração de
+   deploy. Client secrets não devem ser criados, enviados ou armazenados no
+   navegador.
+
 ## Identidade e idempotência
 
 Cada segmento usa um ID local estável. `eventIdFor(blockId, segmentId)` codifica os identificadores em hexadecimal, que é um subconjunto válido do base32hex exigido pela [referência oficial de eventos](https://developers.google.com/workspace/calendar/api/v3/reference/events). A sincronização usa `PUT` no mesmo calendário e no mesmo ID; repetir uma requisição depois de uma queda de conexão atualiza o evento existente em vez de criar outro.

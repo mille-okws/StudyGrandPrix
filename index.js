@@ -5,7 +5,7 @@ import { enqueueCalendarBlock, getCalendarSettings, saveCalendarSettings, listCa
 import { GoogleCalendarAdapter } from "./js/infrastructure/googleCalendarAdapter.js";
 import { buildStudyAnalytics } from "./js/ui/analyticsModel.js";
 import { renderAnalytics, renderStudyCalendar } from "./js/ui/analyticsView.js";
-import { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_CALENDAR_SCOPE } from "./js/infrastructure/googleConfig.js";
+import { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CONFIG_ERROR, GOOGLE_CALENDAR_SCOPE } from "./js/infrastructure/googleConfig.js";
 
 let calendarSettings = null;
 const calendarAdapter = new GoogleCalendarAdapter({ clientId: GOOGLE_OAUTH_CLIENT_ID });
@@ -2443,6 +2443,7 @@ function setCalendarStatus(message) {
 }
 
 async function initializeCalendarControls() {
+    let calendarConnectionInFlight = false;
     try {
         calendarSettings = await getCalendarSettings();
         calendarAdapter.clientId = GOOGLE_OAUTH_CLIENT_ID || calendarSettings.clientId || '';
@@ -2452,7 +2453,7 @@ async function initializeCalendarControls() {
         if (client) client.value = calendarSettings.clientId || GOOGLE_OAUTH_CLIENT_ID || '';
         if (auto) auto.checked = Boolean(calendarSettings.autoSync);
         if (colors) colors.value = JSON.stringify(calendarSettings.subjectColors || {});
-        setCalendarStatus(calendarSettings.connected ? 'Conta configurada. Reconecte nesta aba para sincronizar.' : (GOOGLE_OAUTH_CLIENT_ID ? 'Opcional. Seus stints ficam salvos localmente mesmo sem conexão.' : 'Google Agenda opcional. O site precisa configurar um Client ID público para habilitar a conexão.'));
+        setCalendarStatus(calendarSettings.connected ? 'Conta configurada. Reconecte nesta aba para sincronizar.' : (GOOGLE_OAUTH_CONFIG_ERROR || (GOOGLE_OAUTH_CLIENT_ID ? 'Opcional. Seus stints ficam salvos localmente mesmo sem conexão.' : 'Google Agenda opcional. O site precisa configurar um Client ID público para habilitar a conexão.')));
         await updateCalendarQueueStatus();
     } catch (error) { setCalendarStatus(`Calendário local indisponível: ${error.message}`); }
 
@@ -2463,8 +2464,17 @@ async function initializeCalendarControls() {
     }));
 
     document.getElementById('calendarConnectBtn')?.addEventListener('click', async () => {
+        if (calendarConnectionInFlight) return;
         const clientId = GOOGLE_OAUTH_CLIENT_ID || document.getElementById('calendarClientId')?.value.trim() || '';
+        if (!GOOGLE_OAUTH_CLIENT_ID && document.getElementById('calendarClientId')?.value && !/^\S+\.apps\.googleusercontent\.com$/.test(clientId)) {
+            setCalendarStatus('Informe um Client ID Google válido, terminado em .apps.googleusercontent.com.');
+            return;
+        }
         calendarAdapter.clientId = clientId;
+        const connectButton = document.getElementById('calendarConnectBtn');
+        calendarConnectionInFlight = true;
+        if (connectButton) connectButton.disabled = true;
+        setCalendarStatus('Conectando ao Google Agenda…');
         try {
             await calendarAdapter.connect({ scope: GOOGLE_CALENDAR_SCOPE });
             const select = document.getElementById('calendarSelect');
@@ -2480,9 +2490,10 @@ async function initializeCalendarControls() {
             await syncCalendarQueue(calendarAdapter, { calendarId: calendarSettings.calendarId });
             await updateCalendarQueueStatus();
         } catch (error) { setCalendarStatus(`Não foi possível conectar: ${error.message}`); }
+        finally { calendarConnectionInFlight = false; if (connectButton) connectButton.disabled = false; }
     });
     document.getElementById('calendarDisconnectBtn')?.addEventListener('click', async () => {
-        calendarAdapter.disconnect();
+        try { await calendarAdapter.revokeAccess(); } catch { calendarAdapter.disconnect(); }
         calendarSettings = { ...(calendarSettings || {}), connected: false };
         await saveCalendarSettings(calendarSettings);
         setCalendarStatus('Conta Google desconectada. Os registros locais foram preservados.');
@@ -2490,12 +2501,15 @@ async function initializeCalendarControls() {
     document.getElementById('calendarCreateBtn')?.addEventListener('click', async () => {
         try {
             await calendarAdapter.connect({ scope: GOOGLE_CALENDAR_SCOPE });
-            const created = await calendarAdapter.createStudyCalendar();
+            const existingCalendar = Boolean(calendarSettings?.calendarId && calendarSettings.calendarId !== 'primary');
+            const created = existingCalendar
+                ? { id: calendarSettings.calendarId, summary: 'Study Grand Prix 🏁' }
+                : await calendarAdapter.createStudyCalendar();
             calendarSettings = { ...(calendarSettings || {}), calendarId: created.id, connected: true };
             await saveCalendarSettings(calendarSettings);
             const select = document.getElementById('calendarSelect');
             if (select) { const option = document.createElement('option'); option.value = created.id; option.textContent = created.summary || 'Study Grand Prix 🏁'; option.selected = true; select.append(option); }
-            setCalendarStatus('Agenda Study Grand Prix criada e selecionada.');
+            setCalendarStatus(existingCalendar ? 'Agenda Study Grand Prix já configurada.' : 'Agenda Study Grand Prix criada e selecionada.');
         } catch (error) { setCalendarStatus(`Não foi possível criar a agenda: ${error.message}`); }
     });
     document.getElementById('calendarSelect')?.addEventListener('change', async event => {
