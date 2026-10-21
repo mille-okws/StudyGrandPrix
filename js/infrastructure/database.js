@@ -1,6 +1,6 @@
 export const DATABASE_NAME = 'study-grand-prix';
-export const DATABASE_VERSION = 1;
-export const STORES = ['metadata', 'laps', 'evaluations'];
+export const DATABASE_VERSION = 3;
+export const STORES = ['metadata', 'laps', 'evaluations', 'blocks', 'segments', 'syncQueue'];
 let connection;
 export function openDatabase() {
     if (connection) return Promise.resolve(connection);

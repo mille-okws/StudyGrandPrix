@@ -24,7 +24,7 @@ export async function migrateLegacy(store) {
         return true;
     });
     const rejected = (Array.isArray(parsed?.sessions) ? parsed.sessions.length : 0) - validSessions.length;
-    return transaction(['metadata', 'laps', 'evaluations'], 'readwrite', tx => {
+    return transaction(['metadata', 'laps', 'evaluations', 'blocks', 'segments', 'syncQueue'], 'readwrite', tx => {
         const meta = tx.objectStore('metadata');
         const marker = meta.get('migration-v1');
         marker.onsuccess = () => {

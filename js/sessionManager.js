@@ -18,6 +18,8 @@ import {
 // ============================================================
 
 let context = null;
+let startGeneration = 0;
+let tickInFlight = false;
 
 
 /*
@@ -37,6 +39,9 @@ let context = null;
  * renderCircuitList()
  * recoverRest()
  * consumeRest()
+ * ensureStudyBlock()
+ * closeStudyBlock()
+ * enterPitStop()
  */
 
 export function initializeSessionManager(options = {}) {
@@ -79,9 +84,20 @@ export function initializeSessionManager(options = {}) {
             options.recoverRest,
 
         consumeRest:
-            options.consumeRest
+            options.consumeRest,
+
+        ensureStudyBlock: options.ensureStudyBlock,
+        closeStudyBlock: options.closeStudyBlock,
+        enterPitStop: options.enterPitStop,
+        beginStudySegment: options.beginStudySegment,
+        endStudySegment: options.endStudySegment
 
     };
+
+    // A new manager must never inherit an in-flight start/tick from a
+    // previous application instance (for example after a hot reload).
+    startGeneration++;
+    tickInFlight = false;
 
 }
 
@@ -171,6 +187,10 @@ async function registerCompletedLap() {
 
 }
 
+async function ensureStudyBlock() { return await context?.ensureStudyBlock?.(); }
+async function closeStudyBlock(options) { return await context?.closeStudyBlock?.(options); }
+async function enterPitStop() { return await context?.enterPitStop?.(); }
+
 
 function openPendingRating() {
 
@@ -238,7 +258,9 @@ export async function configureSession(modeKey) {
     state.awaitingNextLap = false;
 
     // Reconfiguring a circuit or mode must stop the previous countdown.
-    pauseTimer();
+    // Reconfiguration is also used by startTimer when a lap has reached zero.
+    // It must stop the old interval without cancelling that in-flight start.
+    await pauseTimer({ invalidate: false });
 
     state.sessionSubject = null;
 
@@ -358,6 +380,16 @@ export async function setMode(modeKey) {
 
     pauseTimer();
 
+    const nextMode = MODES[modeKey];
+    const previousMode = MODES[getState().mode];
+    if (nextMode?.type === "break" && previousMode?.type !== "break") {
+        try { await enterPitStop(); }
+        catch (error) { setEngineer(`Pit stop não pôde ser registrado: ${error.message}`); return; }
+    } else if (nextMode?.type !== "break" && previousMode?.type !== "break" && getState().currentBlock) {
+        try { await closeStudyBlock({ reason: "mode-change" }); }
+        catch (error) { setEngineer(`O stint anterior não pôde ser encerrado: ${error.message}`); return; }
+    }
+
 
     const configured =
         await configureSession(
@@ -454,13 +486,16 @@ export async function startTimer() {
     // ALREADY RUNNING
     // --------------------------------------------------------
 
-    if (
-        state.running
-    ) {
+    if (state.running || state.starting) {
 
         return;
 
     }
+
+    state.starting = true;
+    const generation = ++startGeneration;
+
+    try {
 
 
     const mode =
@@ -528,6 +563,16 @@ export async function startTimer() {
     // --------------------------------------------------------
 
     state.sessionSubject ??= getSelectedSubject();
+    if (mode.type !== "break") {
+        try { await ensureStudyBlock(); }
+        catch (error) { setEngineer(`Não foi possível iniciar o stint: ${error.message}`); return; }
+    }
+    if (mode.type !== "break") await context?.beginStudySegment?.();
+
+    // A pause, reset, or mode change may have happened while persistence was
+    // being awaited. In that case this start request is stale and must not
+    // resurrect the timer or reuse a segment after the user stopped it.
+    if (generation !== startGeneration) return;
 
     state.running =
         true;
@@ -602,6 +647,10 @@ export async function startTimer() {
 
     updateDisplay();
 
+    } finally {
+        state.starting = false;
+    }
+
 }
 
 
@@ -610,6 +659,11 @@ export async function startTimer() {
 // ============================================================
 
 async function tick() {
+
+    if (tickInFlight) return;
+    tickInFlight = true;
+
+    try {
 
     const state =
         getState();
@@ -631,6 +685,14 @@ async function tick() {
     // --------------------------------------------------------
     // COUNTDOWN
     // --------------------------------------------------------
+
+    // A restored session must establish a fresh reference before measuring
+    // elapsed time. Treating null as zero would turn a reload into billions of
+    // seconds of fabricated study time.
+    if (!Number.isFinite(state.lastTickAt)) {
+        state.lastTickAt = Date.now();
+        return;
+    }
 
     // Use elapsed wall time so background-tab throttling cannot extend a lap.
     const elapsedSeconds = Math.max(0, Math.floor((Date.now() - state.lastTickAt) / 1000));
@@ -718,6 +780,10 @@ async function tick() {
 
     updateDisplay();
 
+    } finally {
+        tickInFlight = false;
+    }
+
 }
 
 
@@ -737,10 +803,17 @@ async function tick() {
 // Portanto, voltar ao PUSH continua exatamente de onde parou.
 //
 
-export function pauseTimer() {
+export async function pauseTimer({ technical = false, invalidate = true } = {}) {
 
     const state =
         getState();
+
+    // Invalidate any start that is still waiting for IndexedDB. Without this
+    // guard a fast click on PAUSAR could be undone when that write completes.
+    if (invalidate) {
+        startGeneration++;
+        state.starting = false;
+    }
 
 
     state.running =
@@ -754,6 +827,9 @@ export function pauseTimer() {
 
     state.timerId =
         null;
+    state.lastTickAt = null;
+
+    if (technical) await context?.endStudySegment?.();
 
 
     const startButton =
@@ -968,12 +1044,10 @@ async function finishQualyLap() {
         0
     );
 
-    state.awaitingNextLap = true;
-    pauseTimer();
-    openPendingRating();
-    setEngineer("Volta concluída. Confirme a avaliação para iniciar a próxima volta.");
-
+    state.awaitingNextLap = false;
+    setEngineer(`Classificação ${state.currentLap - 1} concluída. Próxima volta em andamento.`);
     updateDisplay();
+    await startTimer();
 
 }
 
@@ -1040,12 +1114,10 @@ async function finishRaceLap() {
         0
     );
 
-    state.awaitingNextLap = true;
-    pauseTimer();
-    openPendingRating();
-    setEngineer("Volta concluída. Confirme a avaliação para iniciar a próxima volta.");
-
+    state.awaitingNextLap = false;
+    setEngineer(`Volta ${state.currentLap - 1} concluída. Próxima volta em andamento.`);
     updateDisplay();
+    await startTimer();
 
 }
 
@@ -1147,7 +1219,7 @@ export async function finishSession() {
         );
 
 
-        openPendingRating();
+        await closeStudyBlock({ reason: "finish" });
 
         renderSummary();
 
@@ -1171,7 +1243,7 @@ export async function finishSession() {
         );
 
 
-        openPendingRating();
+        await closeStudyBlock({ reason: "finish" });
 
         renderSummary();
 
@@ -1200,7 +1272,7 @@ async function finishPractice() {
     );
 
 
-    openPendingRating();
+    await closeStudyBlock({ reason: "finish" });
 
     renderSummary();
 

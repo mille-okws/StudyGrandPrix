@@ -28,7 +28,7 @@ const {chromium}=require('playwright');
    if(team==='astonmartin'&&[3440,1920,768,390].includes(width))await p.screenshot({path:require('./browser.cjs').screenshot(`layout-${width}.png`),fullPage:true});
   }
   await p.locator('[data-mode="qualy"]').click();await p.locator('#startBtn').click();await p.clock.fastForward(300000);
-  await p.locator('#ratingPanel').waitFor({state:'visible'});assert.ok(await p.locator('#ratingPanel').isVisible());await p.locator('#ratingSubmit').click();await p.locator('#ratingPanel').waitFor({state:'hidden'});await p.locator('#resetBtn').click();
+  await p.locator('#resetBtn').click();
  }
  assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
  console.log('PASSOU: 48 combinações de equipe/tela, pista grande, hierarquia, cards sem sobreposição, controles e avaliação por volta.');

@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
  const b=await require('./browser.cjs').launch();
  try {
  const p=await b.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));
- await p.clock.install();
+ await p.clock.install({time:new Date('2026-10-21T12:00:00-03:00')});
  await p.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});await require('./browser.cjs').ready(p);
  await p.locator('.team-select-card[data-team="astonmartin"]').click();
  assert.ok(!(await p.locator('#subjectSelect').innerText()).includes('engenharia'));

@@ -1,6 +1,16 @@
 import { migrateLegacy } from "./js/infrastructure/migration.js";
-import { completeLap, evaluateLap, readSnapshot } from "./js/infrastructure/repositories/studyRepository.js";
+import { completeLap, evaluateLap, evaluateStudyBlock, readSnapshot, createStudyBlock, updateStudyBlock, closeStudyBlock, startStudySegment, finishStudySegment, recoverActiveSegments } from "./js/infrastructure/repositories/studyRepository.js";
 import { subscribeChanges } from "./js/infrastructure/crossTabSync.js";
+import { enqueueCalendarBlock, getCalendarSettings, saveCalendarSettings, listCalendarQueue, syncCalendarQueue } from "./js/infrastructure/calendarSyncService.js";
+import { GoogleCalendarAdapter } from "./js/infrastructure/googleCalendarAdapter.js";
+import { buildStudyAnalytics } from "./js/ui/analyticsModel.js";
+import { renderAnalytics, renderStudyCalendar } from "./js/ui/analyticsView.js";
+import { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_CALENDAR_SCOPE } from "./js/infrastructure/googleConfig.js";
+
+let calendarSettings = null;
+const calendarAdapter = new GoogleCalendarAdapter({ clientId: GOOGLE_OAUTH_CLIENT_ID });
+const TAB_ID = (() => { try { const key = 'study-grand-prix-tab-id'; const existing = sessionStorage.getItem(key); if (existing) return existing; const id = globalThis.crypto?.randomUUID?.() || `tab-${Date.now()}-${Math.random()}`; sessionStorage.setItem(key, id); return id; } catch { return `tab-${Date.now()}-${Math.random()}`; } })();
+let activeSegment = null;
 
 let synchronizing = false;
 function showPersistenceError(error) {
@@ -22,6 +32,14 @@ async function refreshPersistedData({ recover = false } = {}) {
     const snapshot = await readSnapshot();
     state.store = snapshot.store;
     state.savedPending = snapshot.pending;
+    state.savedPendingBlocks = snapshot.pendingBlocks || [];
+    if (recover && !state.currentBlock) {
+        const ownSegment = snapshot.store.studySegments?.find(segment => segment.ownerId === TAB_ID && (segment.status === "ACTIVE" || segment.recoveredAt));
+        state.currentBlock = ownSegment ? snapshot.store.studyBlocks?.find(block => block.id === ownSegment.blockId && block.status === "OPEN") || null : null;
+    }
+    if (recover && state.currentBlock) {
+        activeSegment = snapshot.store.studySegments?.find(segment => segment.blockId === state.currentBlock.id && segment.ownerId === TAB_ID && segment.status === "ACTIVE") || null;
+    }
     if (snapshot.migrationWarning) {
         let warning = document.getElementById("migrationWarning");
         if (!warning) { warning = document.createElement("p"); warning.id = "migrationWarning"; warning.setAttribute("role", "status"); document.body.prepend(warning); }
@@ -32,12 +50,21 @@ async function refreshPersistedData({ recover = false } = {}) {
         state.awaitingNextLap = false;
         document.getElementById("ratingPanel").hidden = true;
     }
-    if (recover && !state.pendingLap && snapshot.pending.length) {
+    if (state.pendingBlock && !snapshot.pendingBlocks.some(block => block.id === state.pendingBlock.id)) {
+        state.pendingBlock = null;
+        document.getElementById("ratingPanel").hidden = true;
+    }
+    if (recover && !state.pendingLap && !state.pendingBlock && snapshot.pendingBlocks?.length) {
+        state.pendingBlock = snapshot.pendingBlocks[0];
+        openPendingRating();
+        setEngineer("Há um stint salvo aguardando avaliação. Você pode confirmar agora ou continuar o descanso.");
+    } else if (recover && !state.pendingLap && !state.pendingBlock && snapshot.pending.length) {
         state.pendingLap = snapshot.pending[0];
         openPendingRating();
         setEngineer("Há uma volta salva aguardando avaliação. Confirme para atualizar sua telemetria.");
     }
-    renderSummary(); renderCarStatus(); renderTelemetry(); renderFocusChart(); renderCircuitList(); updateDisplay();
+    renderSummary(); renderCarStatus(); renderTelemetry(); renderAnalytics(buildStudyAnalytics(snapshot.store)); renderFocusChart(); renderCircuitList(); updateDisplay();
+    renderStudyCalendar(snapshot.store, { view: state.calendarView });
 }
 async function reconcileExternalChanges() {
     if (synchronizing || state.dataBusy || state.unsavedLap) return;
@@ -136,6 +163,7 @@ const state = {
         MODES.practice.minutes * 60,
 
     running: false,
+    starting: false,
 
     timerId: null,
 
@@ -149,6 +177,10 @@ const state = {
     rest: 0,
 
     pendingLap: null,
+    pendingBlock: null,
+    savedPendingBlocks: [],
+    currentBlock: null,
+    calendarView: "day",
 
     currentDateKey: todayKey()
 
@@ -709,18 +741,20 @@ function updateDisplay() {
         queue = document.createElement("p"); queue.id = "pendingQueueNotice";
         const button = document.createElement("button"); button.type = "button";
         button.addEventListener("click", () => {
-            if (state.running || state.dataBusy || state.unsavedLap || state.pendingLap) return;
-            state.pendingLap = state.savedPending?.[0] || null;
-            if (state.pendingLap) openPendingRating();
+            if (state.running && MODES[state.mode]?.type !== "break") return;
+            if (state.dataBusy || state.unsavedLap || state.pendingLap || state.pendingBlock) return;
+            state.pendingBlock = state.savedPendingBlocks?.[0] || null;
+            state.pendingLap = state.pendingBlock ? null : state.savedPending?.[0] || null;
+            if (state.pendingBlock || state.pendingLap) openPendingRating();
             updateDisplay();
         });
         queue.append(button);
         document.querySelector(".wrap")?.prepend(queue);
     }
-    const count = state.savedPending?.length || 0;
-    queue.hidden = !count || Boolean(state.pendingLap);
-    queue.firstElementChild.textContent = `Avaliar ${count} ${count === 1 ? "volta salva" : "voltas salvas"}${state.running ? " · pause a sessão para avaliar" : ""}`;
-    queue.firstElementChild.disabled = Boolean(state.running || state.dataBusy || state.unsavedLap);
+    const count = (state.savedPendingBlocks?.length || 0) + (state.savedPending?.length || 0);
+    queue.hidden = !count || Boolean(state.pendingLap || state.pendingBlock);
+    queue.firstElementChild.textContent = `Avaliar ${count} ${count === 1 ? "stint salvo" : "registros salvos"}${state.running && MODES[state.mode]?.type !== "break" ? " · pause a sessão para avaliar" : ""}`;
+    queue.firstElementChild.disabled = Boolean((state.running && MODES[state.mode]?.type !== "break") || state.dataBusy || state.unsavedLap);
 
     checkDateRollover();
 
@@ -762,8 +796,8 @@ function updateDisplay() {
     if (modeHelp) {
         const mode = MODES[state.mode];
         modeHelp.textContent = mode.type === "break" ? `${mode.minutes} minutos de descanso. Recupera energia e não conta como estudo.`
-            : mode.type === "practice" ? "25 minutos de estudo · uma volta · avaliação ao final."
-            : `${state.sessionLapLimit || 0} ${mode.type === "qualy" ? "etapas" : "voltas"} de 5 minutos · avaliação entre voltas. ${mode.type === "race" && !state.currentRaceId ? "Selecione um circuito." : ""}`;
+            : mode.type === "practice" ? "25 minutos de estudo · um stint · avaliação no pit stop."
+            : `${state.sessionLapLimit || 0} ${mode.type === "qualy" ? "etapas" : "voltas"} de 5 minutos · avaliação no pit stop. ${mode.type === "race" && !state.currentRaceId ? "Selecione um circuito." : ""}`;
     }
 
     if (timerSub) {
@@ -892,7 +926,11 @@ async function registerCompletedLap() {
         await completeLap(lap);
         state.unsavedLap = null;
         state.completedLaps++;
-        state.pendingLap = lap;
+        if (state.currentBlock) {
+            state.currentBlock.completedLaps = [...new Set([...(state.currentBlock.completedLaps || []), lap.id])];
+            state.currentBlock.effectiveStudySeconds = Number(state.currentBlock.effectiveStudySeconds || 0);
+            await updateStudyBlock(state.currentBlock);
+        }
         document.getElementById("persistenceNotice")?.remove();
         try { await refreshPersistedData(); }
         catch (error) { showPersistenceError(new Error(`A volta foi salva, mas a atualização do painel falhou: ${error.message}`)); }
@@ -908,6 +946,79 @@ async function registerCompletedLap() {
 // ============================================================
 // RATING
 // ============================================================
+
+async function ensureStudyBlock() {
+    if (state.currentBlock) {
+        if (!activeSegment) await beginStudySegment();
+        return state.currentBlock;
+    }
+    const subject = state.sessionSubject || getSelectedSubject();
+    const now = new Date().toISOString();
+    const block = {
+        id: crypto.randomUUID(), sessionId: crypto.randomUUID(), subject: subject.id,
+        subjectName: subject.name, circuitId: state.currentRaceId || "free-practice",
+        mode: state.mode, startedAt: now, completedLaps: [], effectiveStudySeconds: 0,
+        status: "OPEN", createdAt: now, updatedAt: now
+    };
+    await createStudyBlock(block);
+    state.currentBlock = block;
+    await beginStudySegment();
+    return block;
+}
+
+async function beginStudySegment() {
+    if (!state.currentBlock || activeSegment) return activeSegment;
+    const now = new Date().toISOString();
+    activeSegment = { id: crypto.randomUUID(), ownerId: TAB_ID, blockId: state.currentBlock.id, sessionId: state.currentBlock.sessionId, subjectId: state.currentBlock.subject, startedAt: now, effectiveSeconds: 0, status: "ACTIVE", createdAt: now, updatedAt: now };
+    await startStudySegment(activeSegment);
+    return activeSegment;
+}
+
+async function endStudySegment() {
+    if (!activeSegment) return;
+    const segment = activeSegment;
+    const endedAt = new Date().toISOString();
+    const effectiveSeconds = Math.max(0, (Date.parse(endedAt) - Date.parse(segment.startedAt)) / 1000);
+    await finishStudySegment(segment.id, { endedAt, effectiveSeconds });
+    activeSegment = null;
+}
+
+async function closeCurrentStudyBlock({ reason = "pit-stop" } = {}) {
+    const block = state.currentBlock;
+    if (!block) return null;
+    const mode = MODES[state.mode];
+    await endStudySegment();
+    if (mode?.type !== "break" && state.secondsLeft > 0 && state.secondsLeft < state.totalSeconds) {
+        const partial = Math.max(0, state.totalSeconds - state.secondsLeft);
+        const already = Number(block.partialStudySeconds || 0);
+        block.partialStudySeconds = Math.max(already, partial);
+        block.effectiveStudySeconds += Math.max(0, block.partialStudySeconds - already);
+    }
+    block.endedAt = new Date().toISOString();
+    block.closeReason = reason;
+    await closeStudyBlock(block, { createEvaluation: true });
+    const persistedBlock = (await readSnapshot()).store.studyBlocks?.find(item => item.id === block.id) || block;
+    block.effectiveStudySeconds = persistedBlock.effectiveStudySeconds;
+    try {
+        await enqueueCalendarBlock(block.id, { reason: "block-closed" });
+        if (calendarSettings?.autoSync && calendarAdapter.connected) await syncCalendarQueue(calendarAdapter, { calendarId: calendarSettings.calendarId });
+    } catch (error) { showPersistenceError(new Error(`O stint foi salvo, mas entrou na fila do calendário com aviso: ${error.message}`)); }
+    state.currentBlock = null;
+    if (block.effectiveStudySeconds >= 1) {
+        state.pendingBlock = block;
+        await refreshPersistedData();
+        openPendingRating();
+        return block;
+    }
+    await refreshPersistedData();
+    return null;
+}
+
+async function enterPitStop() {
+    pauseTimer();
+    await closeCurrentStudyBlock({ reason: "pit-stop" });
+    setEngineer(state.pendingBlock ? "Pit stop iniciado. Avalie o stint quando quiser; o descanso já pode começar." : "Pit stop iniciado. Sem tempo efetivo suficiente para avaliação.");
+}
 
 function openPendingRating() {
 
@@ -973,8 +1084,13 @@ function openPendingRating() {
     if (panel) {
         let context = document.getElementById("pendingLapContext");
         if (!context) { context = document.createElement("p"); context.id = "pendingLapContext"; panel.prepend(context); }
+        const block = state.pendingBlock;
         const lap = state.pendingLap;
-        if (lap) context.textContent = `${lap.subjectName || lap.subject} · ${RACES.find(race => race.id === lap.circuitId)?.gp || lap.circuitId} · ${MODES[lap.mode]?.sessionName || lap.mode} · volta ${lap.lap} · ${lap.dateKey}. Volta salva; avaliação pendente.`;
+        if (block) {
+            const race = RACES.find(race => race.id === block.circuitId);
+            const minutes = Math.round(Number(block.effectiveStudySeconds || 0) / 60);
+            context.textContent = `AVALIAÇÃO DO STINT · ${block.subjectName || block.subject} · ${minutes} min efetivos · ${(block.completedLaps || []).length} voltas · ${race?.gp || block.circuitId}. Você pode confirmar durante o descanso.`;
+        } else if (lap) context.textContent = `${lap.subjectName || lap.subject} · ${RACES.find(race => race.id === lap.circuitId)?.gp || lap.circuitId} · ${MODES[lap.mode]?.sessionName || lap.mode} · volta ${lap.lap} · ${lap.dateKey}. Avaliação antiga pendente.`;
 
         panel.hidden = false;
         panel.style.removeProperty("display");
@@ -987,7 +1103,7 @@ function openPendingRating() {
 async function submitPendingRating({ resume = true } = {}) {
 
     if (state.dataBusy) return false;
-    if (!state.pendingLap) {
+    if (!state.pendingLap && !state.pendingBlock) {
         return true;
     }
 
@@ -1017,12 +1133,20 @@ async function submitPendingRating({ resume = true } = {}) {
 
     setDataBusy(true);
     try {
-        await evaluateLap(state.pendingLap.id, { focus, completion, errors });
+        if (state.pendingBlock) await evaluateStudyBlock(state.pendingBlock.id, { focus, completion, errors });
+        else await evaluateLap(state.pendingLap.id, { focus, completion, errors });
     } catch (error) {
         showPersistenceError(error);
         return false;
     } finally { setDataBusy(false); }
+    if (state.pendingBlock) {
+        try {
+            await enqueueCalendarBlock(state.pendingBlock.id, { reason: "evaluation-updated" });
+            if (calendarSettings?.autoSync && calendarAdapter.connected) await syncCalendarQueue(calendarAdapter, { calendarId: calendarSettings.calendarId });
+        } catch (error) { setCalendarStatus(`Avaliação salva; calendário pendente: ${error.message}`); }
+    }
     state.pendingLap = null;
+    state.pendingBlock = null;
     document.getElementById("persistenceNotice")?.remove();
     try { await refreshPersistedData(); }
     catch (error) { showPersistenceError(new Error(`A avaliação foi salva, mas a atualização do painel falhou: ${error.message}`)); }
@@ -2054,6 +2178,8 @@ function renderSummary() {
 
 function bindEvents() {
 
+    initializeCalendarControls();
+
     // --------------------------------------------------------
     // START / PAUSE
     // --------------------------------------------------------
@@ -2075,11 +2201,11 @@ function bindEvents() {
 
                 if (state.running) {
 
-                    pauseTimer();
+                    await pauseTimer({ technical: true });
 
                 } else {
 
-                    startTimer();
+                    await startTimer();
 
                 }
 
@@ -2127,14 +2253,6 @@ function bindEvents() {
                     async () => {
 
                         if (state.dataBusy || state.unsavedLap) return;
-                        if (
-                            state.pendingLap
-                        ) {
-
-                            if (!await submitPendingRating({ resume: false })) return;
-
-                        }
-
                         setMode(
                             button.dataset.mode
                         );
@@ -2312,6 +2430,115 @@ function bindEvents() {
 
 }
 
+async function updateCalendarQueueStatus() {
+    const queue = await listCalendarQueue();
+    const pending = queue.filter(item => item.state !== 'SYNCED').length;
+    const element = document.getElementById('calendarQueueStatus');
+    if (element) element.textContent = pending ? `${pending} registro(s) aguardando sincronização.` : 'Nenhum registro pendente.';
+}
+
+function setCalendarStatus(message) {
+    const element = document.getElementById('calendarStatus');
+    if (element) element.textContent = message;
+}
+
+async function initializeCalendarControls() {
+    try {
+        calendarSettings = await getCalendarSettings();
+        calendarAdapter.clientId = GOOGLE_OAUTH_CLIENT_ID || calendarSettings.clientId || '';
+        const client = document.getElementById('calendarClientId');
+        const auto = document.getElementById('calendarAutoSync');
+        const colors = document.getElementById('calendarSubjectColors');
+        if (client) client.value = calendarSettings.clientId || GOOGLE_OAUTH_CLIENT_ID || '';
+        if (auto) auto.checked = Boolean(calendarSettings.autoSync);
+        if (colors) colors.value = JSON.stringify(calendarSettings.subjectColors || {});
+        setCalendarStatus(calendarSettings.connected ? 'Conta configurada. Reconecte nesta aba para sincronizar.' : (GOOGLE_OAUTH_CLIENT_ID ? 'Opcional. Seus stints ficam salvos localmente mesmo sem conexão.' : 'Google Agenda opcional. O site precisa configurar um Client ID público para habilitar a conexão.'));
+        await updateCalendarQueueStatus();
+    } catch (error) { setCalendarStatus(`Calendário local indisponível: ${error.message}`); }
+
+    document.querySelectorAll('[data-calendar-period]').forEach(button => button.addEventListener('click', () => {
+        document.querySelectorAll('[data-calendar-period]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+        state.calendarView = button.dataset.calendarPeriod;
+        renderStudyCalendar(state.store, { view: state.calendarView });
+    }));
+
+    document.getElementById('calendarConnectBtn')?.addEventListener('click', async () => {
+        const clientId = GOOGLE_OAUTH_CLIENT_ID || document.getElementById('calendarClientId')?.value.trim() || '';
+        calendarAdapter.clientId = clientId;
+        try {
+            await calendarAdapter.connect({ scope: GOOGLE_CALENDAR_SCOPE });
+            const select = document.getElementById('calendarSelect');
+            let targetCalendar = calendarSettings?.calendarId && calendarSettings.calendarId !== 'primary' ? { id: calendarSettings.calendarId, summary: 'Study Grand Prix 🏁' } : null;
+            if (!targetCalendar) targetCalendar = await calendarAdapter.createStudyCalendar();
+            if (select) {
+                select.innerHTML = '';
+                const option = document.createElement('option'); option.value = targetCalendar.id; option.textContent = targetCalendar.summary || targetCalendar.id; option.selected = true; select.append(option);
+            }
+            calendarSettings = { ...(calendarSettings || {}), clientId, connected: true, calendarId: targetCalendar.id };
+            await saveCalendarSettings(calendarSettings);
+            setCalendarStatus('Conta Google conectada.');
+            await syncCalendarQueue(calendarAdapter, { calendarId: calendarSettings.calendarId });
+            await updateCalendarQueueStatus();
+        } catch (error) { setCalendarStatus(`Não foi possível conectar: ${error.message}`); }
+    });
+    document.getElementById('calendarDisconnectBtn')?.addEventListener('click', async () => {
+        calendarAdapter.disconnect();
+        calendarSettings = { ...(calendarSettings || {}), connected: false };
+        await saveCalendarSettings(calendarSettings);
+        setCalendarStatus('Conta Google desconectada. Os registros locais foram preservados.');
+    });
+    document.getElementById('calendarCreateBtn')?.addEventListener('click', async () => {
+        try {
+            await calendarAdapter.connect({ scope: GOOGLE_CALENDAR_SCOPE });
+            const created = await calendarAdapter.createStudyCalendar();
+            calendarSettings = { ...(calendarSettings || {}), calendarId: created.id, connected: true };
+            await saveCalendarSettings(calendarSettings);
+            const select = document.getElementById('calendarSelect');
+            if (select) { const option = document.createElement('option'); option.value = created.id; option.textContent = created.summary || 'Study Grand Prix 🏁'; option.selected = true; select.append(option); }
+            setCalendarStatus('Agenda Study Grand Prix criada e selecionada.');
+        } catch (error) { setCalendarStatus(`Não foi possível criar a agenda: ${error.message}`); }
+    });
+    document.getElementById('calendarSelect')?.addEventListener('change', async event => {
+        calendarSettings = { ...(calendarSettings || {}), calendarId: event.target.value };
+        await saveCalendarSettings(calendarSettings);
+    });
+    document.getElementById('calendarAutoSync')?.addEventListener('change', async event => {
+        calendarSettings = { ...(calendarSettings || {}), autoSync: event.target.checked };
+        await saveCalendarSettings(calendarSettings);
+    });
+    document.getElementById('calendarSubjectColors')?.addEventListener('change', async event => {
+        try {
+            const subjectColors = JSON.parse(event.target.value || '{}');
+            if (!subjectColors || Array.isArray(subjectColors) || typeof subjectColors !== 'object') throw new Error('use um objeto JSON');
+            calendarSettings = { ...(calendarSettings || {}), subjectColors };
+            await saveCalendarSettings(calendarSettings);
+            setCalendarStatus('Cores das matérias salvas localmente.');
+        } catch (error) { setCalendarStatus(`Cores inválidas: ${error.message}`); }
+    });
+    document.getElementById('calendarSyncBtn')?.addEventListener('click', async () => {
+        try { const result = await syncCalendarQueue(calendarAdapter, { calendarId: calendarSettings?.calendarId }); setCalendarStatus(result.skipped ? 'Conecte uma conta para sincronizar.' : `${result.synced} registro(s) sincronizado(s).`); await updateCalendarQueueStatus(); }
+        catch (error) { setCalendarStatus(`Sincronização pendente: ${error.message}`); }
+    });
+    document.getElementById('calendarHistoryBtn')?.addEventListener('click', async () => {
+        try {
+            const snapshot = await readSnapshot();
+            for (const block of snapshot.store.studyBlocks || []) if (block.status !== 'OPEN') await enqueueCalendarBlock(block.id, { reason: 'history-import' });
+            // Older evaluated laps are preserved with their original semantics.
+            // They can still be imported as calendar records when a real end time exists.
+            for (const session of snapshot.store.sessions || []) {
+                if (session.targetType === 'STUDY_BLOCK' || !session.completedAt || !session.id) continue;
+                const end = new Date(session.completedAt);
+                const start = new Date(end.getTime() - Math.max(1, Number(session.duration || 0)) * 1000);
+                const id = `legacy-calendar:${session.id}`;
+                await createStudyBlock({ id, sessionId: id, subject: session.subject, subjectName: session.subjectName || session.subject, circuitId: session.circuitId || 'legacy', mode: session.mode || 'practice', startedAt: start.toISOString(), endedAt: end.toISOString(), completedLaps: [], effectiveStudySeconds: Math.max(1, Number(session.duration || 0)), status: 'COMPLETED' });
+                await enqueueCalendarBlock(id, { reason: 'history-import' });
+            }
+            await updateCalendarQueueStatus();
+            setCalendarStatus('Histórico local enfileirado.');
+        } catch (error) { setCalendarStatus(`Não foi possível enfileirar o histórico: ${error.message}`); }
+    });
+}
+
 
 // ============================================================
 // INITIALIZATION
@@ -2320,6 +2547,7 @@ function bindEvents() {
 async function initializeApp() {
     try {
         await migrateLegacy(state.store);
+        await recoverActiveSegments(new Date().toISOString(), TAB_ID);
         state.store = (await readSnapshot()).store;
     } catch (error) {
         showPersistenceError(error);
@@ -2396,7 +2624,13 @@ async function initializeApp() {
 
         recoverRest,
 
-        consumeRest
+        consumeRest,
+
+        ensureStudyBlock,
+        beginStudySegment,
+        endStudySegment,
+        closeStudyBlock: closeCurrentStudyBlock,
+        enterPitStop
 
     });
 

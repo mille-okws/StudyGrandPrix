@@ -5,7 +5,7 @@ async function read(p) { return p.evaluate(async()=>document.documentElement.dat
  ? (await (await import('/js/infrastructure/repositories/studyRepository.js')).readSnapshot()).store
  : JSON.parse(localStorage.getItem('silverArrowPomodoro2026'))); }
 async function boot(ctx) {
- const p=await ctx.newPage();await p.clock.install();await p.goto(URL,{waitUntil:'networkidle'});if(!process.env.EXPECT_LEGACY)await require('../browser.cjs').ready(p);
+ const p=await ctx.newPage();await p.clock.install({time:new Date('2026-10-21T12:00:00-03:00')});await p.goto(URL,{waitUntil:'networkidle'});if(!process.env.EXPECT_LEGACY)await require('../browser.cjs').ready(p);
  await p.locator('.team-select-card').first().waitFor({state:'visible'}).catch(()=>{});
  if(await p.locator('#teamSelectOverlay').isVisible())await p.locator('.team-select-card[data-team="mercedes"]').click();
  await p.locator('.circuit-row').first().waitFor();return p;

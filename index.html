@@ -16,6 +16,7 @@
   >
 
   <link rel="stylesheet" href="./css/layout.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <title>PROJETO SILVER ARROW</title>
 </head>
@@ -371,7 +372,7 @@
            SUBJECT
       ==================================================== -->
 
-      <p id="modeHelp" class="mode-help">25 minutos de estudo · uma volta · avaliação ao final.</p>
+      <p id="modeHelp" class="mode-help">25 minutos de estudo · um stint · avaliação no pit stop.</p>
 
       <div class="box-body subject-body">
 
@@ -441,8 +442,8 @@
       >
 
         <div class="rtitle">
-          AVALIAÇÃO DA VOLTA —
-          COMO FOI A SESSÃO?
+          AVALIAÇÃO DO STINT —
+          COMO FOI O BLOCO?
         </div>
 
 
@@ -619,6 +620,37 @@
 
       </div>
 
+    </section>
+
+    <section class="box-panel calendar-panel" id="googleCalendarPanel" aria-labelledby="googleCalendarTitle">
+      <div class="box-head">
+        <span class="eyebrow">PIT WALL // CALENDÁRIO</span>
+        <h2 id="googleCalendarTitle">GOOGLE AGENDA</h2>
+      </div>
+      <p id="calendarStatus" class="subject-help" role="status" aria-live="polite">Opcional. Seus stints ficam salvos localmente mesmo sem conexão.</p>
+      <div class="calendar-settings-grid">
+        <details class="calendar-dev-config"><summary>Configuração de desenvolvimento</summary><label for="calendarClientId">Client ID OAuth (opcional)</label>
+        <input id="calendarClientId" type="text" autocomplete="off" placeholder="...apps.googleusercontent.com"></details>
+        <label for="calendarSelect">Agenda de destino</label>
+        <select id="calendarSelect"><option value="primary">Agenda principal</option></select>
+        <label><input id="calendarAutoSync" type="checkbox"> Sincronizar automaticamente quando houver autorização</label>
+        <label for="calendarSubjectColors">Cores das matérias (IDs de cor do Google, JSON)</label>
+        <input id="calendarSubjectColors" type="text" autocomplete="off" placeholder='{"matematica":"7"}'>
+      </div>
+      <div class="calendar-actions">
+        <button type="button" id="calendarConnectBtn">Conectar conta Google</button>
+        <button type="button" id="calendarCreateBtn" class="secondary">Criar agenda Study Grand Prix</button>
+        <button type="button" id="calendarDisconnectBtn" class="secondary">Desconectar</button>
+        <button type="button" id="calendarSyncBtn" class="secondary">Sincronizar agora</button>
+        <button type="button" id="calendarHistoryBtn" class="secondary">Enfileirar histórico</button>
+      </div>
+      <p id="calendarQueueStatus" class="subject-help">Nenhum registro pendente.</p>
+    </section>
+
+    <section class="box-panel calendar-panel" id="internalCalendarPanel" aria-labelledby="internalCalendarTitle">
+      <div class="box-head"><span class="eyebrow">TELEMETRIA LOCAL</span><h2 id="internalCalendarTitle">HISTÓRICO DE STINTS</h2></div>
+      <div class="calendar-periods" role="group" aria-label="Período do calendário"><button type="button" data-calendar-period="day">Dia</button><button type="button" data-calendar-period="week">Semana</button><button type="button" data-calendar-period="month">Mês</button></div>
+      <div id="studyCalendarTimeline" class="calendar-timeline" aria-live="polite"></div>
     </section>
 
 <section class="box-panel focus-panel">

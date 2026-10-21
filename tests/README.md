@@ -47,34 +47,29 @@ Se o Playwright já estiver instalado fora do projeto, `NODE_PATH` pode indicar 
 - `portuguese.cjs`: português nos controles, cinco modos, mensagens e seis identidades de equipe.
 - `themes.cjs`: equipes, circuitos, controles e componentes de campeonato em quatro larguras.
 - `layout.cjs`: 48 combinações de seis equipes e oito telas, de 320 px a 3440 px; pista, hierarquia, sobreposição e controles. Inclui Red Bull, cujo layout compartilhado já evita o estouro antigo.
-- `astonmartin.cjs`: identidade, mensagens após trocar de equipe, estados de alerta, teclado, sessões e formulários em oito larguras.
-- `modes-championship.cjs`: classificação completa, corrida de 56 voltas, pausa, retomada, reset, troca de circuito/modo, avaliações e regras semanais P1–P22, prêmios, viradas de semana e ano.
+- `astonmartin.cjs`: identidade, mensagens após trocar de equipe, estados de alerta, teclado e formulários em oito larguras.
+- `modes-championship.cjs`: classificação semanal, três voltas no mesmo stint, avaliação única no pit stop, pausas sem estudo e seis temas.
+- `integration/stint-calendar.cjs`: avaliação por bloco, múltiplas voltas, fila offline e criação/atualização idempotente de evento com adaptador simulado.
+- `integration/segments-sync.cjs`: pausa técnica, segmentos sem sobreposição, soma de tempo efetivo, IDs válidos por segmento e recuperação de lease expirado.
+- `integration/session-recovery.cjs`: inicialização concorrente, pausa durante persistência e prevenção de cronômetros órfãos.
+- `integration/google-sync.cjs`: escopo mínimo, expiração de token, leases, backoff, erros permanentes e IDs estáveis.
+- `integration/analytics.cjs`: telemetria e calendários diário, semanal e mensal sem inventar horários históricos.
 
 Essas suítes passaram a aguardar a confirmação assíncrona do banco e a consultar a projeção do IndexedDB, em vez de interpretar o localStorage legado como fonte atual. Os fixtures que simulam instalações antigas limpam somente o banco do contexto de teste antes da migração.
 
 ## Integridade — Release 1
 
-`integration/data-safety.cjs` verifica 15 cenários com resultados persistidos:
-
-1. Duas abas concluem e avaliam simultaneamente sem perda.
-2. Recarregamento com avaliação pendente e confirmação idempotente.
-3. Repetição de volta, rejeição de dados inválidos e proteção contra snapshots antigos.
-4. Migração de histórico agregado e detalhado, preservação da origem e reexecução.
-5. Migração interrompida, rollback completo e nova tentativa.
-6. JSON inválido sem sobrescrever a origem.
-7. Recusa simulada de gravação de volta e repetição segura.
-8. Recusa de avaliação sem atualizar parcialmente a volta.
-9. Preservação de mais de 500 avaliações.
-10. Reconciliação por foco sem BroadcastChannel.
-11. Duas abas iniciando a migração simultaneamente.
-12. Fechamento de aba e confirmação da mesma pendência por duas abas.
-13. Separação de avaliações antigas inválidas, aviso e preservação da cópia bruta.
-14. IndexedDB indisponível com aviso explícito.
-15. BroadcastChannel exposto mas negado, com inicialização e gravação funcionando.
+`integration/data-safety.cjs` verifica concorrência de voltas, criação de um bloco com três voltas, avaliação idempotente, migração preservada e fila local. Os cenários históricos mais extensos da Release 1 continuam descritos em `docs/RELEASE-1.md`; a suíte específica `stint-calendar.cjs` cobre a nova granularidade e o adaptador simulado.
 
 `integration/legacy-regressions.cjs` contém dois testes comportamentais executáveis também contra o commit anterior: recarregar uma avaliação pendente e concluir em duas abas. Ambos falham em `87c8392` e passam nesta release. Ao executar contra a versão antiga em outro servidor, configure `EXPECT_LEGACY=1` para dispensar o indicador assíncrono de inicialização introduzido nesta release.
 
 Falhas de gravação são simuladas por aborto de transações reais do IndexedDB. Isso testa rollback e tratamento da recusa; não simula esgotamento físico do disco nem mede a quota real de cada navegador. A validação foi realizada no Windows com Edge/Chromium. O runner é portátil, mas Linux, Firefox e WebKit não foram executados nesta etapa.
+
+## Google Agenda e dados locais
+
+A conta Google é opcional. O aplicativo cria os blocos, segmentos e a fila no IndexedDB antes de tentar a API. O adaptador usa Google Identity Services com Client ID público configurado pelo deploy (há um campo manual apenas para desenvolvimento), mantém o token somente em memória e aplica `PUT` com um identificador determinístico por segmento para evitar eventos duplicados. Sem autorização ou conexão, os registros permanecem como `PENDING`/`ERROR` e podem ser sincronizados depois. A sincronização em segundo plano com o navegador completamente fechado não é prometida.
+
+O calendário interno é renderizado a partir dos segmentos locais e não depende do Google, com visões de dia, semana e mês.
 
 ## Escopo posterior
 
