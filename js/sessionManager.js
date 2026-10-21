@@ -165,9 +165,9 @@ function pick(array) {
 }
 
 
-function registerCompletedLap() {
+async function registerCompletedLap() {
 
-    context?.registerCompletedLap?.();
+    return await context?.registerCompletedLap?.();
 
 }
 
@@ -213,7 +213,7 @@ function consumeRest() {
 // SESSION CONFIGURATION
 // ============================================================
 
-export function configureSession(modeKey) {
+export async function configureSession(modeKey) {
 
     const state =
         getState();
@@ -233,7 +233,8 @@ export function configureSession(modeKey) {
     }
 
 
-    if (state.pendingLap) context?.submitPendingRating?.({ resume: false });
+    if (state.dataBusy || state.unsavedLap) return false;
+    if (state.pendingLap && !await context?.submitPendingRating?.({ resume: false })) return false;
     state.awaitingNextLap = false;
 
     // Reconfiguring a circuit or mode must stop the previous countdown.
@@ -353,13 +354,13 @@ export function configureSession(modeKey) {
 // MODE
 // ============================================================
 
-export function setMode(modeKey) {
+export async function setMode(modeKey) {
 
     pauseTimer();
 
 
     const configured =
-        configureSession(
+        await configureSession(
             modeKey
         );
 
@@ -443,7 +444,7 @@ export function setMode(modeKey) {
 // START / RESUME TIMER
 // ============================================================
 
-export function startTimer() {
+export async function startTimer() {
 
     const state =
         getState();
@@ -519,7 +520,8 @@ export function startTimer() {
     }
 
 
-    if (state.secondsLeft <= 0) configureSession(state.mode);
+    if (state.dataBusy || state.unsavedLap || state.pendingLap) return;
+    if (state.secondsLeft <= 0) await configureSession(state.mode);
 
     // --------------------------------------------------------
     // START / RESUME
@@ -607,7 +609,7 @@ export function startTimer() {
 // TIMER TICK
 // ============================================================
 
-function tick() {
+async function tick() {
 
     const state =
         getState();
@@ -689,7 +691,8 @@ function tick() {
         state.secondsLeft <= 0
     ) {
 
-        finishLap();
+        pauseTimer();
+        await finishLap();
 
         return;
 
@@ -781,7 +784,7 @@ export function pauseTimer() {
 // Reset realmente abandona a sessão atual e volta para LAP 1.
 //
 
-export function resetTimer() {
+export async function resetTimer() {
 
     const state =
         getState();
@@ -790,7 +793,7 @@ export function resetTimer() {
     pauseTimer();
 
 
-    configureSession(
+    await configureSession(
         state.mode
     );
 
@@ -823,7 +826,7 @@ export function resetTimer() {
 // Somente a última volta chama finishSession().
 //
 
-function finishLap() {
+async function finishLap() {
 
     const state =
         getState();
@@ -849,7 +852,7 @@ function finishLap() {
         mode.type === "break"
     ) {
 
-        finishSession();
+        await finishSession();
 
         return;
 
@@ -864,7 +867,7 @@ function finishLap() {
         mode.type === "practice"
     ) {
 
-        finishSession();
+        await finishSession();
 
         return;
 
@@ -879,7 +882,7 @@ function finishLap() {
         mode.type === "qualy"
     ) {
 
-        finishQualyLap();
+        await finishQualyLap();
 
         return;
 
@@ -894,7 +897,7 @@ function finishLap() {
         mode.type === "race"
     ) {
 
-        finishRaceLap();
+        await finishRaceLap();
 
         return;
 
@@ -907,7 +910,7 @@ function finishLap() {
 // QUALIFYING LAP
 // ============================================================
 
-function finishQualyLap() {
+async function finishQualyLap() {
 
     const state =
         getState();
@@ -920,7 +923,7 @@ function finishQualyLap() {
     // REGISTER LAP
     // --------------------------------------------------------
 
-    registerCompletedLap();
+    if (!await registerCompletedLap()) return;
 
 
     const total =
@@ -935,7 +938,7 @@ function finishQualyLap() {
         state.completedLaps >= total
     ) {
 
-        finishSession();
+        await finishSession();
 
         return;
 
@@ -979,7 +982,7 @@ function finishQualyLap() {
 // RACE LAP
 // ============================================================
 
-function finishRaceLap() {
+async function finishRaceLap() {
 
     const state =
         getState();
@@ -992,7 +995,7 @@ function finishRaceLap() {
     // REGISTER LAP
     // --------------------------------------------------------
 
-    registerCompletedLap();
+    if (!await registerCompletedLap()) return;
 
 
     const total =
@@ -1007,7 +1010,7 @@ function finishRaceLap() {
         state.completedLaps >= total
     ) {
 
-        finishSession();
+        await finishSession();
 
         return;
 
@@ -1066,7 +1069,7 @@ function finishRaceLap() {
 // pit stop acabou.
 //
 
-export function finishSession() {
+export async function finishSession() {
 
     const state =
         getState();
@@ -1124,7 +1127,7 @@ export function finishSession() {
         mode.type === "practice"
     ) {
 
-        finishPractice();
+        await finishPractice();
 
         return;
 
@@ -1185,9 +1188,9 @@ export function finishSession() {
 // PRACTICE FINISH
 // ============================================================
 
-function finishPractice() {
+async function finishPractice() {
 
-    registerCompletedLap();
+    if (!await registerCompletedLap()) return;
 
 
     setEngineer(
@@ -1259,4 +1262,8 @@ function finishBreak() {
 
     renderSummary();
 
+}
+// Retry a refused commit through the same lap transition, keeping its ID.
+export async function retryCompletedLap() {
+    if (getState().unsavedLap && !getState().dataBusy) await finishLap();
 }

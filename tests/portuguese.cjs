@@ -2,13 +2,13 @@ const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
 (async () => {
-    const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] });
+    const browser = await require('./browser.cjs').launch();
     try {
         const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
         await page.clock.install();
-        await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/', { waitUntil: 'networkidle' });
+        await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/', { waitUntil: 'networkidle' });await require('./browser.cjs').ready(page);
         assert.equal(await page.locator('html').getAttribute('lang'), 'pt-BR');
         assert.equal((await page.locator('.team-select-header h1').innerText()).trim(), 'ESCOLHA SUA EQUIPE');
         // Theme identities remain as named, while the surrounding UI is translated.

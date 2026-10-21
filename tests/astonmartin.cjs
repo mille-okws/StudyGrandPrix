@@ -1,11 +1,11 @@
 const assert = require('node:assert/strict');
 const {chromium}=require('playwright');
 (async()=>{
- const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+ const b=await require('./browser.cjs').launch();
  try{
  const p=await b.newPage({viewport:{width:390,height:844}}); const errors=[],failed=[];
  p.on('pageerror',e=>errors.push(e.message));p.on('response',r=>{if(r.status()>=400)failed.push(r.url())});
- await p.clock.install();await p.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+ await p.clock.install();await p.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});await require('./browser.cjs').ready(p);
  await p.keyboard.press('Escape');assert.ok(await p.locator('#teamSelectOverlay').isVisible(),'first boot needs a team');
  await p.locator('.team-select-card[data-team="astonmartin"]').click();
  assert.equal(await p.evaluate(()=>document.activeElement.id),'changeTeamBtn');
@@ -23,11 +23,11 @@ const {chromium}=require('playwright');
   if(team!=='astonmartin'){await p.locator('#changeTeamBtn').click();await p.locator(`.team-select-card[data-team="${team}"]`).click();await p.waitForLoadState('networkidle');}
   const message=await p.evaluate(async()=>{const {getEngineerStart}=await import('/data/engineerStatus.js');return getEngineerStart()[0]});assert.equal(message,identities[team],`live messages ${team}`);
   await p.locator('.circuit-row').first().click();await p.locator('[data-mode="practice"]').click();await p.locator('#startBtn').click();await p.clock.fastForward(1500000);
-  assert.ok(await p.locator('#ratingPanel').isVisible());await p.locator('#ratingSubmit').click();
-  const total=await p.evaluate(()=>JSON.parse(localStorage.getItem('silverArrowPomodoro2026')).sessions.length);results.push(total);
+  await p.locator('#ratingPanel').waitFor({state:'visible'});assert.ok(await p.locator('#ratingPanel').isVisible());await p.locator('#ratingSubmit').click();await p.locator('#ratingPanel').waitFor({state:'hidden'});
+  const total=await p.evaluate(async()=>(await (await import('/js/infrastructure/repositories/studyRepository.js')).readSnapshot()).store.sessions.length);results.push(total);
   await p.locator('[data-mode="short"]').click();await p.locator('#startBtn').click();await p.clock.fastForward(300000);
   assert.equal(await p.locator('#timerDisplay').innerText(),'00:00');assert.ok(await p.locator('#ratingPanel').isHidden());
-  assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem('silverArrowPomodoro2026')).sessions.length),total,'break does not add study');
+  assert.equal(await p.evaluate(async()=>(await (await import('/js/infrastructure/repositories/studyRepository.js')).readSnapshot()).store.sessions.length),total,'break does not add study');
  }
  assert.deepEqual(results,[1,2,3,4,5,6]);
  await p.locator('#changeTeamBtn').click();await p.locator('.team-select-card[data-team="astonmartin"]').click();await p.waitForLoadState('networkidle');
@@ -36,7 +36,7 @@ const {chromium}=require('playwright');
   assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`expanded subject editor ${width}`);
   await p.locator('.subject-manager summary').click();
  }
- await p.screenshot({path:'/tmp/aston-reviewed.png',fullPage:true});
+ await p.screenshot({path:require('./browser.cjs').screenshot('aston-reviewed.png'),fullPage:true});
  assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
  console.log('PASSOU: Aston comparada com cinco equipes, resultados idênticos por sessão, mensagens corretas, recuperação, seleção por teclado, oito larguras e formulários expandidos.');
  }finally{await b.close()}

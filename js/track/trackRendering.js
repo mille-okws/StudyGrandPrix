@@ -42,12 +42,12 @@ function saveData() {
 }
 
 
-function configureSession(mode) {
+async function configureSession(mode) {
     if (
         context &&
         typeof context.configureSession === "function"
     ) {
-        context.configureSession(mode);
+        return await context.configureSession(mode);
     }
 }
 
@@ -495,9 +495,11 @@ export function renderCircuitList() {
 // SELECT CIRCUIT
 // ============================================================
 
-export function selectCircuit(id) {
+export async function selectCircuit(id) {
 
     const state = getState();
+    if (state.dataBusy || state.unsavedLap) return;
+    if (state.pendingLap && !await context.submitPendingRating({ resume: false })) return;
 
 
     // --------------------------------------------------------
@@ -553,7 +555,7 @@ export function selectCircuit(id) {
     // Configure session
     // --------------------------------------------------------
 
-    configureSession(
+    await configureSession(
         state.mode
     );
 }

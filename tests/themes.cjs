@@ -1,13 +1,13 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 (async () => {
- const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] });
+ const browser = await require('./browser.cjs').launch();
  try {
   const page = await browser.newPage({ viewport: { width:1440, height:1100 } });
   const errors=[], failed=[];
   page.on('pageerror', e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)failed.push(r.url())});
   await page.clock.install();
-  await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+  await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});await require('./browser.cjs').ready(page);
   const identities=[];
   for(const team of ['mercedes','ferrari','mclaren','alpine','astonmartin','redbull']) {
    if(team!=='mercedes')await page.locator('#changeTeamBtn').click();
@@ -23,7 +23,7 @@ const { chromium } = require('playwright');
     for(const id of ['#changeTeamBtn','#championshipCard','#weeklyAward','#subjectSelect','#startBtn','#resetBtn'])assert.ok(await page.locator(id).isVisible(),`${team} missing ${id}`);
     assert.ok(await page.locator('.controls button').evaluateAll(els=>els.every(e=>e.scrollWidth<=e.clientWidth+1)),`${team} control overflow at ${width}`);
    }
-   if(team!=='redbull')await page.screenshot({path:`/tmp/theme-${team}.png`,fullPage:true});
+   if(team!=='redbull')await page.screenshot({path:require('./browser.cjs').screenshot(`theme-${team}.png`),fullPage:true});
    await page.locator('[data-mode="short"]').click();await page.locator('#startBtn').click();await page.clock.runFor(2000);
    assert.equal(await page.locator('#timerDisplay').innerText(),'04:58');await page.locator('#startBtn').click();await page.locator('#resetBtn').click();
    assert.equal(await page.locator('#timerDisplay').innerText(),'05:00');

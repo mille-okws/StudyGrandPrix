@@ -1,3 +1,52 @@
+import { migrateLegacy } from "./js/infrastructure/migration.js";
+import { completeLap, evaluateLap, readSnapshot } from "./js/infrastructure/repositories/studyRepository.js";
+import { subscribeChanges } from "./js/infrastructure/crossTabSync.js";
+
+let synchronizing = false;
+function showPersistenceError(error) {
+    let notice = document.getElementById("persistenceNotice");
+    if (!notice) {
+        notice = document.createElement("p");
+        notice.id = "persistenceNotice";
+        notice.setAttribute("role", "alert");
+        document.body.prepend(notice);
+    }
+    notice.textContent = `Não foi possível confirmar a gravação. ${error?.message || "Verifique o armazenamento do navegador."} Os dados já salvos foram preservados.`;
+}
+window.addEventListener("persistenceError", event => showPersistenceError(event.detail));
+function setDataBusy(value) {
+    state.dataBusy = value;
+    for (const element of document.querySelectorAll('#startBtn, #resetBtn, #ratingSubmit, .modeswitch button')) element.disabled = value;
+}
+async function refreshPersistedData({ recover = false } = {}) {
+    const snapshot = await readSnapshot();
+    state.store = snapshot.store;
+    state.savedPending = snapshot.pending;
+    if (snapshot.migrationWarning) {
+        let warning = document.getElementById("migrationWarning");
+        if (!warning) { warning = document.createElement("p"); warning.id = "migrationWarning"; warning.setAttribute("role", "status"); document.body.prepend(warning); }
+        warning.textContent = snapshot.migrationWarning;
+    }
+    if (state.pendingLap && !snapshot.pending.some(lap => lap.id === state.pendingLap.id)) {
+        state.pendingLap = null;
+        state.awaitingNextLap = false;
+        document.getElementById("ratingPanel").hidden = true;
+    }
+    if (recover && !state.pendingLap && snapshot.pending.length) {
+        state.pendingLap = snapshot.pending[0];
+        openPendingRating();
+        setEngineer("Há uma volta salva aguardando avaliação. Confirme para atualizar sua telemetria.");
+    }
+    renderSummary(); renderCarStatus(); renderTelemetry(); renderFocusChart(); renderCircuitList(); updateDisplay();
+}
+async function reconcileExternalChanges() {
+    if (synchronizing || state.dataBusy || state.unsavedLap) return;
+    synchronizing = true;
+    try { await refreshPersistedData(); }
+    catch (error) { showPersistenceError(error); }
+    finally { synchronizing = false; }
+}
+
 import { renderChampionship } from "./js/championship.js";
 import { initializeSubjects, getSelectedSubject } from "./js/subjects.js";
 
@@ -33,7 +82,8 @@ import {
     setMode,
     startTimer,
     pauseTimer,
-    resetTimer
+    resetTimer,
+    retryCompletedLap
 } from "./js/sessionManager.js";
 
 // ============================================================
@@ -654,6 +704,23 @@ function updateRestDisplay() {
 // ============================================================
 
 function updateDisplay() {
+    let queue = document.getElementById("pendingQueueNotice");
+    if (!queue) {
+        queue = document.createElement("p"); queue.id = "pendingQueueNotice";
+        const button = document.createElement("button"); button.type = "button";
+        button.addEventListener("click", () => {
+            if (state.running || state.dataBusy || state.unsavedLap || state.pendingLap) return;
+            state.pendingLap = state.savedPending?.[0] || null;
+            if (state.pendingLap) openPendingRating();
+            updateDisplay();
+        });
+        queue.append(button);
+        document.querySelector(".wrap")?.prepend(queue);
+    }
+    const count = state.savedPending?.length || 0;
+    queue.hidden = !count || Boolean(state.pendingLap);
+    queue.firstElementChild.textContent = `Avaliar ${count} ${count === 1 ? "volta salva" : "voltas salvas"}${state.running ? " · pause a sessão para avaliar" : ""}`;
+    queue.firstElementChild.disabled = Boolean(state.running || state.dataBusy || state.unsavedLap);
 
     checkDateRollover();
 
@@ -809,115 +876,32 @@ function setEngineer(message) {
 // O sessionManager decide quando a avaliação deve aparecer.
 //
 
-function registerCompletedLap() {
-
+async function registerCompletedLap() {
+    if (state.dataBusy) return false;
     checkDateRollover();
-
-    const today =
-        getTodayData();
-
-    const duration =
-        Number(
-            state.totalSeconds
-        ) || 0;
-
-    // --------------------------------------------------------
-    // GLOBAL TOTAL
-    // --------------------------------------------------------
-
-    state.store.laps =
-        Number(
-            state.store.laps
-        ) + 1;
-
-    state.store.totalSeconds =
-        Number(
-            state.store.totalSeconds
-        ) +
-        duration;
-
-    // --------------------------------------------------------
-    // TODAY
-    // --------------------------------------------------------
-
-    today.laps =
-        Number(
-            today.laps
-        ) + 1;
-
-    today.totalSeconds =
-        Number(
-            today.totalSeconds
-        ) + duration;
-
-    // --------------------------------------------------------
-    // CIRCUIT
-    // --------------------------------------------------------
-
-    const circuitData =
-        getCircuitData(
-            state.store,
-            state.currentRaceId
-        );
-
-    if (circuitData) {
-
-        circuitData.laps =
-            Number(
-                circuitData.laps
-            ) + 1;
-
-    }
-
-    // --------------------------------------------------------
-    // SESSION
-    // --------------------------------------------------------
-
-    state.completedLaps++;
-
-    // --------------------------------------------------------
-    // PENDING RATING
-    // --------------------------------------------------------
-
     const subject = state.sessionSubject || getSelectedSubject();
-
-    state.pendingLap = {
-
-        circuitId:
-            state.currentRaceId,
-
-        subject: subject.id,
-        subjectName: subject.name,
-
-        duration,
-
-        dateKey:
-            todayKey(),
-
-        mode:
-            state.mode,
-
-        lap:
-            state.currentLap
-
+    const lap = state.unsavedLap || {
+        id: crypto.randomUUID(), circuitId: state.currentRaceId,
+        subject: subject.id, subjectName: subject.name,
+        duration: Number(state.totalSeconds), dateKey: todayKey(),
+        mode: state.mode, lap: state.currentLap
     };
-
-    // --------------------------------------------------------
-    // SAVE EVERYTHING
-    // --------------------------------------------------------
-
-    saveData(
-        state.store
-    );
-
-    // --------------------------------------------------------
-    // REFRESH UI
-    // --------------------------------------------------------
-
-    renderSummary();
-    renderCarStatus();
-    renderTelemetry();
-
+    state.unsavedLap = lap;
+    setDataBusy(true);
+    try {
+        await completeLap(lap);
+        state.unsavedLap = null;
+        state.completedLaps++;
+        state.pendingLap = lap;
+        document.getElementById("persistenceNotice")?.remove();
+        try { await refreshPersistedData(); }
+        catch (error) { showPersistenceError(new Error(`A volta foi salva, mas a atualização do painel falhou: ${error.message}`)); }
+        return true;
+    } catch (error) {
+        showPersistenceError(error);
+        setEngineer("Volta ainda não salva. Libere espaço e pressione INICIAR para tentar novamente. Não feche esta aba.");
+        return false;
+    } finally { setDataBusy(false); }
 }
 
 
@@ -987,6 +971,10 @@ function openPendingRating() {
         );
 
     if (panel) {
+        let context = document.getElementById("pendingLapContext");
+        if (!context) { context = document.createElement("p"); context.id = "pendingLapContext"; panel.prepend(context); }
+        const lap = state.pendingLap;
+        if (lap) context.textContent = `${lap.subjectName || lap.subject} · ${RACES.find(race => race.id === lap.circuitId)?.gp || lap.circuitId} · ${MODES[lap.mode]?.sessionName || lap.mode} · volta ${lap.lap} · ${lap.dateKey}. Volta salva; avaliação pendente.`;
 
         panel.hidden = false;
         panel.style.removeProperty("display");
@@ -996,10 +984,11 @@ function openPendingRating() {
 }
 
 
-function submitPendingRating({ resume = true } = {}) {
+async function submitPendingRating({ resume = true } = {}) {
 
+    if (state.dataBusy) return false;
     if (!state.pendingLap) {
-        return;
+        return true;
     }
 
     const focus =
@@ -1026,35 +1015,17 @@ function submitPendingRating({ resume = true } = {}) {
             10
         );
 
-    state.store.sessions.push({
-
-        ...state.pendingLap,
-
-        focus,
-
-        completion,
-
-        errors
-
-    });
-
-    // --------------------------------------------------------
-    // KEEP STORAGE BOUNDED
-    // --------------------------------------------------------
-
-    if (
-        state.store.sessions.length > 500
-    ) {
-
-        state.store.sessions.shift();
-
-    }
-
+    setDataBusy(true);
+    try {
+        await evaluateLap(state.pendingLap.id, { focus, completion, errors });
+    } catch (error) {
+        showPersistenceError(error);
+        return false;
+    } finally { setDataBusy(false); }
     state.pendingLap = null;
-
-    saveData(
-        state.store
-    );
+    document.getElementById("persistenceNotice")?.remove();
+    try { await refreshPersistedData(); }
+    catch (error) { showPersistenceError(new Error(`A avaliação foi salva, mas a atualização do painel falhou: ${error.message}`)); }
 
     // --------------------------------------------------------
     // CLOSE PANEL
@@ -1082,7 +1053,11 @@ function submitPendingRating({ resume = true } = {}) {
     updateDisplay();
     const continueSession = state.awaitingNextLap;
     state.awaitingNextLap = false;
-    if (resume && continueSession) startTimer();
+    if (resume && continueSession) await startTimer();
+    else if (resume) {
+        try { await refreshPersistedData({ recover: true }); } catch (error) { showPersistenceError(error); }
+    }
+    return true;
 
 }
 
@@ -2087,11 +2062,13 @@ function bindEvents() {
         .getElementById("startBtn")
         ?.addEventListener(
             "click",
-            () => {
+            async () => {
 
+                if (state.dataBusy) return;
+                if (state.unsavedLap) { await retryCompletedLap(); return; }
                 if (state.pendingLap) {
 
-                    submitPendingRating();
+                    await submitPendingRating();
                     return;
 
                 }
@@ -2118,11 +2095,13 @@ function bindEvents() {
         .getElementById("resetBtn")
         ?.addEventListener(
             "click",
-            () => {
+            async () => {
 
+                if (state.dataBusy) return;
+                if (state.unsavedLap) return;
                 if (state.pendingLap) {
 
-                    submitPendingRating({ resume: false });
+                    if (!await submitPendingRating({ resume: false })) return;
 
                 }
 
@@ -2145,13 +2124,14 @@ function bindEvents() {
 
                 button.addEventListener(
                     "click",
-                    () => {
+                    async () => {
 
+                        if (state.dataBusy || state.unsavedLap) return;
                         if (
                             state.pendingLap
                         ) {
 
-                            submitPendingRating({ resume: false });
+                            if (!await submitPendingRating({ resume: false })) return;
 
                         }
 
@@ -2337,7 +2317,14 @@ function bindEvents() {
 // INITIALIZATION
 // ============================================================
 
-function initializeApp() {
+async function initializeApp() {
+    try {
+        await migrateLegacy(state.store);
+        state.store = (await readSnapshot()).store;
+    } catch (error) {
+        showPersistenceError(error);
+        return;
+    }
 
     console.log(
         "SILVER ARROW // INICIALIZAÇÃO"
@@ -2424,6 +2411,8 @@ function initializeApp() {
 
     initializeTrackRendering({
 
+        submitPendingRating,
+
         getState:
             () => state,
 
@@ -2507,7 +2496,7 @@ function initializeApp() {
         )
     ) {
 
-        selectCircuit(
+        await selectCircuit(
             lastCircuit
         );
 
@@ -2525,6 +2514,9 @@ function initializeApp() {
     updateRestDisplay();
 
     updateDisplay();
+    await refreshPersistedData({ recover: true });
+    subscribeChanges(reconcileExternalChanges);
+    document.documentElement.dataset.appReady = "true";
 
 
     // ========================================================
@@ -2548,7 +2540,7 @@ if (
 
     document.addEventListener(
         "DOMContentLoaded",
-        initializeApp,
+        () => initializeApp().catch(showPersistenceError),
         {
             once: true
         }
@@ -2556,6 +2548,6 @@ if (
 
 } else {
 
-    initializeApp();
+    initializeApp().catch(showPersistenceError);
 
 }

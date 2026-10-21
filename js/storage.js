@@ -1,3 +1,4 @@
+import { saveAuxiliary } from "./infrastructure/repositories/studyRepository.js";
 
 // ============================================================
 // SILVER ARROW
@@ -333,8 +334,7 @@ function normalizeSessions(
                 session &&
                 typeof session === "object" &&
                 !Array.isArray(session)
-        )
-        .slice(-500);
+        );
 }
 
 
@@ -562,82 +562,14 @@ export function loadData() {
 // SAVE
 // ============================================================
 
-export function saveData(
-    store
-) {
-
-    try {
-
-        // ----------------------------------------------------
-        // VALIDATE ROOT
-        // ----------------------------------------------------
-
-        if (
-            !store ||
-            typeof store !== "object" ||
-            Array.isArray(store)
-        ) {
-
-            console.warn(
-                "SILVER ARROW: store inválido."
-            );
-
-            return false;
-        }
-
-
-        // ----------------------------------------------------
-        // NORMALIZE
-        // ----------------------------------------------------
-
-        const normalized =
-            normalizeStore(
-                store
-            );
-
-
-        // ----------------------------------------------------
-        // KEEP ORIGINAL OBJECT IN SYNC
-        // ----------------------------------------------------
-
-        Object.keys(
-            store
-        ).forEach(
-            key => {
-
-                delete store[key];
-            }
-        );
-
-        Object.assign(
-            store,
-            normalized
-        );
-
-
-        // ----------------------------------------------------
-        // PERSIST
-        // ----------------------------------------------------
-
-        localStorage.setItem(
-            STORE_KEY,
-            JSON.stringify(
-                store
-            )
-        );
-
-        return true;
-
-    }
-    catch (error) {
-
-        console.warn(
-            "SILVER ARROW: falha ao salvar storage.",
-            error
-        );
-
+// History is written only by the transactional lap/evaluation repository.
+// The compatibility facade saves auxiliary fields; callers must never use it
+// to replace lap records from an in-memory snapshot.
+export function saveData(store) {
+    return saveAuxiliary(store).then(() => true).catch(error => {
+        window.dispatchEvent(new CustomEvent("persistenceError", { detail: error }));
         return false;
-    }
+    });
 }
 
 

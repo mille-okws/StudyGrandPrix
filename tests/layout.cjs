@@ -1,11 +1,11 @@
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 (async()=>{
- const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+ const b=await require('./browser.cjs').launch();
  try{
  const p=await b.newPage();const errors=[],failed=[];
  p.on('pageerror',e=>errors.push(e.message));p.on('response',r=>{if(r.status()>=400)failed.push(r.url())});
- await p.clock.install();await p.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});
+ await p.clock.install();await p.goto(process.env.BASE_URL || 'http://127.0.0.1:8000/',{waitUntil:'networkidle'});await require('./browser.cjs').ready(p);
  const screens=[[3440,1440],[2560,1440],[1920,1080],[1366,768],[1024,768],[768,1024],[390,844],[320,740]];
  for(const team of ['astonmartin','mercedes','ferrari','mclaren','alpine','redbull']){
   if(team!=='astonmartin')await p.locator('#changeTeamBtn').click();
@@ -25,10 +25,10 @@ const {chromium}=require('playwright');
    }
    assert.ok(await p.locator('.controls button').evaluateAll(es=>es.every(e=>e.scrollWidth<=e.clientWidth+1)),`${team} controls ${width}`);
    assert.ok(await p.locator('.circuit-shortcut').isVisible());
-   if(team==='astonmartin'&&[3440,1920,768,390].includes(width))await p.screenshot({path:`/tmp/layout-${width}.png`,fullPage:true});
+   if(team==='astonmartin'&&[3440,1920,768,390].includes(width))await p.screenshot({path:require('./browser.cjs').screenshot(`layout-${width}.png`),fullPage:true});
   }
   await p.locator('[data-mode="qualy"]').click();await p.locator('#startBtn').click();await p.clock.fastForward(300000);
-  assert.ok(await p.locator('#ratingPanel').isVisible());await p.locator('#ratingSubmit').click();await p.locator('#resetBtn').click();
+  await p.locator('#ratingPanel').waitFor({state:'visible'});assert.ok(await p.locator('#ratingPanel').isVisible());await p.locator('#ratingSubmit').click();await p.locator('#ratingPanel').waitFor({state:'hidden'});await p.locator('#resetBtn').click();
  }
  assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
  console.log('PASSOU: 48 combinações de equipe/tela, pista grande, hierarquia, cards sem sobreposição, controles e avaliação por volta.');

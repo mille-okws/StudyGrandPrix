@@ -1,65 +1,81 @@
-# Testes no navegador
+# Testes do Study Grand Prix
 
-O aplicativo não precisa de dependências. Os testes usam Playwright e o Chromium
-instalado no ambiente, com um contexto de navegador isolado e relógio simulado.
-Nenhum dado do navegador do usuário é alterado.
+A aplicação continua sem dependências de produção. Os testes usam Node.js e Playwright em contextos de navegador isolados. Nenhum teste usa o perfil pessoal do usuário.
 
-Inicie o servidor na raiz do repositório:
+## Preparação
 
-```sh
-python3 -m http.server 8000 --bind 127.0.0.1
-```
-
-Neste ambiente, execute:
+Na raiz do projeto, instale o Playwright (a validação desta release usou 1.62.1):
 
 ```sh
-NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/subjects.cjs
-NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/portuguese.cjs
-NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/modes-championship.cjs
+npm install --no-save --no-package-lock playwright@1.62.1
+npx playwright install chromium
 ```
 
-Em outro ambiente, instale `playwright@1.58.2` em um diretório externo ao
-repositório e configure `NODE_PATH` para o `node_modules` desse diretório.
-Os testes esperam Chromium em `/usr/bin/chromium` e o servidor na porta 8000.
-
-Verifica criação, edição, exclusão, duplicatas, persistência, vinculação da matéria
-à sessão, aerodinâmica para qualquer área, preservação do histórico, nomes tratados como
-texto, proteção da última matéria, layout móvel e migração de registros antigos.
-
-O teste de português verifica a interface nos seis temas, a preservação dos
-nomes e estilos das equipes em inglês, os cinco modos de sessão, os controles,
-as mensagens de conclusão e o layout móvel.
-
-O teste de modos e campeonato verifica as três etapas da classificação,
-avaliações por volta, início/pausa/reinício, troca de circuito, pausas sem
-pontuação, contagem de tempo em abas suspensas, P1 a P22, viradas de semana
-e ano, prêmios persistentes, setas de posição e os seis temas.
-
-O teste de temas pode usar uma porta alternativa:
+Inicie um servidor separado na raiz:
 
 ```sh
-BASE_URL=http://127.0.0.1:8001/ NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/themes.cjs
+python -m http.server 8000 --bind 127.0.0.1
 ```
 
-Ele verifica os cinco temas revisados em 320, 390, 768 e 1440 pixels, além de
-cronômetro, matérias, circuitos e cards do campeonato. A Red Bull participa das
-verificações funcionais, mas mantém o estouro de largura preexistente em telas
-estreitas: esse tema foi preservado conforme solicitado.
-
-O teste de layout cobre monitores ultrawide (3440×1440), QHD (2560×1440),
-Full HD (1920×1080), notebooks (1366×768), tablets e celulares, nos seis temas:
+Execute todas as suítes, em Windows ou Linux:
 
 ```sh
-BASE_URL=http://127.0.0.1:8002/ NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/layout.cjs
+node tests/run.cjs
 ```
 
-Todos os testes aceitam `BASE_URL` para usar outra porta local. O layout compartilhado
-agora mantém também a Red Bull dentro da tela, preservando sua identidade visual.
+Por padrão, os testes usam o Chromium gerenciado pelo Playwright. Para usar um executável existente, configure `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`. Para outra porta, configure `BASE_URL`. Capturas ficam no diretório temporário do sistema, em `study-grand-prix-tests`; `TEST_ARTIFACT_DIR` permite mudar esse destino.
 
-O teste específico da Aston Martin compara o registro de sessões com as outras
-cinco equipes, verifica as mensagens da equipe após trocas, os alertas de energia,
-a seleção pelo teclado e formulários expandidos em oito larguras de tela:
+Exemplo PowerShell:
+
+```powershell
+$env:BASE_URL = 'http://127.0.0.1:8000/'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
+node tests/run.cjs
+```
+
+Exemplo Linux:
 
 ```sh
-BASE_URL=http://127.0.0.1:8002/ NODE_PATH=/workspace/.onboarding-tools/node_modules node tests/astonmartin.cjs
+BASE_URL=http://127.0.0.1:8000/ node tests/run.cjs
 ```
+
+Se o Playwright já estiver instalado fora do projeto, `NODE_PATH` pode indicar o diretório `node_modules` correspondente. Não existe mais dependência de `/usr/bin/chromium`.
+
+## Cobertura existente
+
+- `subjects.cjs`: criação, edição, exclusão, duplicatas, nomes tratados como texto, persistência e associação da matéria ao início da sessão, preservação do histórico e migração de matérias antigas.
+- `portuguese.cjs`: português nos controles, cinco modos, mensagens e seis identidades de equipe.
+- `themes.cjs`: equipes, circuitos, controles e componentes de campeonato em quatro larguras.
+- `layout.cjs`: 48 combinações de seis equipes e oito telas, de 320 px a 3440 px; pista, hierarquia, sobreposição e controles. Inclui Red Bull, cujo layout compartilhado já evita o estouro antigo.
+- `astonmartin.cjs`: identidade, mensagens após trocar de equipe, estados de alerta, teclado, sessões e formulários em oito larguras.
+- `modes-championship.cjs`: classificação completa, corrida de 56 voltas, pausa, retomada, reset, troca de circuito/modo, avaliações e regras semanais P1–P22, prêmios, viradas de semana e ano.
+
+Essas suítes passaram a aguardar a confirmação assíncrona do banco e a consultar a projeção do IndexedDB, em vez de interpretar o localStorage legado como fonte atual. Os fixtures que simulam instalações antigas limpam somente o banco do contexto de teste antes da migração.
+
+## Integridade — Release 1
+
+`integration/data-safety.cjs` verifica 15 cenários com resultados persistidos:
+
+1. Duas abas concluem e avaliam simultaneamente sem perda.
+2. Recarregamento com avaliação pendente e confirmação idempotente.
+3. Repetição de volta, rejeição de dados inválidos e proteção contra snapshots antigos.
+4. Migração de histórico agregado e detalhado, preservação da origem e reexecução.
+5. Migração interrompida, rollback completo e nova tentativa.
+6. JSON inválido sem sobrescrever a origem.
+7. Recusa simulada de gravação de volta e repetição segura.
+8. Recusa de avaliação sem atualizar parcialmente a volta.
+9. Preservação de mais de 500 avaliações.
+10. Reconciliação por foco sem BroadcastChannel.
+11. Duas abas iniciando a migração simultaneamente.
+12. Fechamento de aba e confirmação da mesma pendência por duas abas.
+13. Separação de avaliações antigas inválidas, aviso e preservação da cópia bruta.
+14. IndexedDB indisponível com aviso explícito.
+15. BroadcastChannel exposto mas negado, com inicialização e gravação funcionando.
+
+`integration/legacy-regressions.cjs` contém dois testes comportamentais executáveis também contra o commit anterior: recarregar uma avaliação pendente e concluir em duas abas. Ambos falham em `87c8392` e passam nesta release. Ao executar contra a versão antiga em outro servidor, configure `EXPECT_LEGACY=1` para dispensar o indicador assíncrono de inicialização introduzido nesta release.
+
+Falhas de gravação são simuladas por aborto de transações reais do IndexedDB. Isso testa rollback e tratamento da recusa; não simula esgotamento físico do disco nem mede a quota real de cada navegador. A validação foi realizada no Windows com Edge/Chromium. O runner é portátil, mas Linux, Firefox e WebKit não foram executados nesta etapa.
+
+## Escopo posterior
+
+Recuperação do cronômetro, máquina de estados completa, regras de energia, modo temporário quando o armazenamento falha e backup/importação pertencem à Release 2. As suítes atuais de energia verificam o comportamento que já existia; não comprovam que os defeitos adiados foram corrigidos.
